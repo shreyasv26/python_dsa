@@ -76,9 +76,84 @@ def characterReplacement(self, s: str, k: int) -> int:
             counts[s[l]] -= 1
             l += 1
         
-        # 4. Update the global maximum length
         max_len = max(max_len, r - l + 1)
 
     return max_len
 
+def numSubarraysWithSum(self, nums: List[int], goal: int) -> int:
+    def atmost(arr ,goal):
+        if goal<0:
+            return 0
+        
+        l,sum,count=0,0,0
+        
+        for r in range(len(arr)):
+            sum+=arr[r]
+
+            while sum>goal:
+                sum-=arr[l]
+                l+=1
+
+            count+=(r-l+1)  #add length bc we use it in [0,0,0]
+        return count
+
+    return atmost(nums,goal)-atmost(nums,goal-1)
+
+def numSubarraysWithSum2(self, nums: List[int], goal: int) -> int:
+    counts = {0: 1} # {PrefixSum: Frequency}
+    current_sum = 0
+    total = 0
     
+    for x in nums:
+        current_sum += x
+        # If (current_sum - goal) exists, it means we found subarrays
+        total += counts.get(current_sum - goal, 0)
+        counts[current_sum] = counts.get(current_sum, 0) + 1
+        
+    return total
+
+def numberOfSubarrays(self, nums: List[int], k: int) -> int:
+    def atmost(nums,k):    
+        l,count,total=0,0,0
+
+        for r in range(len(nums)):
+            if nums[r]%2!=0:
+                count+=1
+            
+            while count>k:
+                if nums[l]%2 !=0:
+                    count-=1
+                l+=1
+
+            total+=(r-l+1)
+        return total
+    
+    return atmost(nums,k) - atmost(nums,k-1)
+
+def numberOfSubarrays2(self, nums: List[int], k: int) -> int:
+    counts = {0: 1} # {PrefixSum: Frequency}
+    current_sum = 0
+    total = 0
+    
+    for x in nums:
+        if x%2==1:
+            current_sum += 1
+        # If (current_sum - goal) exists, it means we found subarrays
+        total += counts.get(current_sum - k, 0)
+        counts[current_sum] = counts.get(current_sum, 0) + 1
+        
+    return total
+
+def numberOfSubstrings(self, s: str) -> int:
+    counts = {0: 1} # {PrefixSum: Frequency}
+    current_sum = 0
+    total = 0
+    
+    for x in s:
+        current_sum += 1
+        # If (current_sum - goal) exists, it means we found subarrays
+        total += counts.get(current_sum - k, 0)
+        counts[current_sum] = counts.get(current_sum, 0) + 1
+        
+    return total
+
