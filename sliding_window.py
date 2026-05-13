@@ -131,29 +131,39 @@ def numberOfSubarrays(self, nums: List[int], k: int) -> int:
     return atmost(nums,k) - atmost(nums,k-1)
 
 def numberOfSubarrays2(self, nums: List[int], k: int) -> int:
-    counts = {0: 1} # {PrefixSum: Frequency}
-    current_sum = 0
-    total = 0
-    
-    for x in nums:
-        if x%2==1:
-            current_sum += 1
-        # If (current_sum - goal) exists, it means we found subarrays
-        total += counts.get(current_sum - k, 0)
-        counts[current_sum] = counts.get(current_sum, 0) + 1
+        counts = {0: 1} # {OddCountPrefix: Frequency}
+        current_odd_count = 0
+        total = 0
         
-    return total
+        for x in nums:
+            # Treat every odd number as a 1
+            if x % 2 == 1:
+                current_odd_count += 1
+
+            # Check if we have seen a prefix that makes the current window have exactly k odds
+            total += counts.get(current_odd_count - k, 0)
+            
+            # Update the frequency of the current prefix count
+            counts[current_odd_count] = counts.get(current_odd_count, 0) + 1
+            
+        return total
 
 def numberOfSubstrings(self, s: str) -> int:
-    counts = {0: 1} # {PrefixSum: Frequency}
-    current_sum = 0
-    total = 0
-    
-    for x in s:
-        current_sum += 1
-        # If (current_sum - goal) exists, it means we found subarrays
-        total += counts.get(current_sum - k, 0)
-        counts[current_sum] = counts.get(current_sum, 0) + 1
-        
-    return total
+    lastseen={'a':-1,'b':-1,'c':-1}
+    count=0
 
+    for i in range(len(s)):
+        lastseen[s[i]]=i
+        if lastseen['a']!=-1 and lastseen['b']!=-1 and lastseen['c']!=-1:
+            count+= 1+min(lastseen['a'],lastseen['b'],lastseen['c'])
+
+    return count
+
+def maxScore(self, cardPoints: List[int], k: int) -> int:
+    if len(cardPoints)==k:
+        return sum(cardPoints)
+    
+    lsum,rsum,maxsum=0,0,0
+
+    for r in range(len(cardPoints)):
+        
