@@ -160,10 +160,21 @@ def numberOfSubstrings(self, s: str) -> int:
     return count
 
 def maxScore(self, cardPoints: List[int], k: int) -> int:
-    if len(cardPoints)==k:
-        return sum(cardPoints)
-    
-    lsum,rsum,maxsum=0,0,0
+    maxsum=0
+    l,r=0,len(cardPoints)
 
-    for r in range(len(cardPoints)):
+    for i in range(k):      #sum(cardPoints[:k])
+        maxsum+=i
+
+    l=k-1
+    while l<r:
+        curr_sum+=(-cardPoints[l]+cardPoints[r])
+
+        maxsum=max(maxsum,curr_sum)
+
+        l-=1
+        r-=1
+
+    return maxsum
+
         
