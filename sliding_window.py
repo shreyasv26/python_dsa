@@ -177,4 +177,120 @@ def maxScore(self, cardPoints: List[int], k: int) -> int:
 
     return maxsum
 
+def lengthOfLongestSubstringKDistinct(self, s: str, k: int) -> int:
+    map={}
+    l=0
+    maxlen=0
+
+    for r in range(len(s)):
+        map[s[r]]=map.get(s[r],0)+1
+
+        while len(map)>k:
+            map[s[l]]-=1
+            if map[s[l]]==0:
+                del map[s[l]]
+            l+=1
+
+        maxlen=max(maxlen,r-l+1)
+    
+    return maxlen
+
+def subarraysWithKDistinct(self, nums: List[int], k: int) -> int:
+    def atMost(nums: List[int], k: int):
+        if k<=0:
+            return 0
         
+        l,total=0,0
+        map={}
+
+        for r in range(len(nums)):
+            map[nums[r]]=map.get(nums[r],0)+1
+
+            while len(map)>k:
+                map[nums[l]]-=1
+                if map[nums[l]]==0:
+                    del map[nums[l]]
+                l+=1
+            total+=(r-l+1)
+
+        return total
+    
+    return atMost(nums,k)- atMost(nums,k-1)
+        
+def minWindow(self, s: str, t: str) -> str:
+    if len(s)<len(t):
+        return ""
+    
+    map={}
+    for ch in t:
+        map[ch]=map.get(ch,0)+1
+
+    l,start_ind,count=0,-1,{}
+    minlen = float('inf')   #setting to infinity
+    required=len(map)
+    formed=0
+
+    for r in range(len(s)):
+        ch=s[r]
+
+        if ch in map:
+            count[ch]=count.get(ch,0)+1
+            if count[ch]==map[ch]:
+                formed+=1
+
+        while formed==required:
+            if(r-l+1)<minlen:        #updating mini len
+                minlen=r-l+1
+                start_ind=l
+
+            l_char=s[l]       #shrinking n if issue loop breaks n old len will be preserved
+            if l_char in map:
+                if count[l_char]==map[l_char]:
+                    formed-=1
+                count[l_char]-=1
+            l+=1
+
+    return "" if start_ind==-1 else s[start_ind:start_ind+minlen]
+
+def minWindow2(self, s: str, t: str) -> str:
+        s_len, t_len = len(s), len(t)
+        s_idx, t_idx = 0, 0
+        min_len = float('inf')
+        start_idx = -1
+        
+        while s_idx < s_len:
+            # 1. Forward Pass: Find a valid subsequence match
+            if s[s_idx] == t[t_idx]:
+                t_idx += 1
+                
+                # If we matched the entire string t
+                if t_idx == t_len:
+                    end_idx = s_idx
+                    t_idx -= 1  # Move back to the last character of t
+                    
+                    # 2. Backward Pass: Optimize the window from right to left
+                    while t_idx >= 0:
+                        if s[s_idx] == t[t_idx]:
+                            t_idx -= 1
+                        s_idx -= 1
+                    
+                    # s_idx has moved 1 step too far to the left, correct it
+                    s_idx += 1 
+                    
+                    # Update min_len if this window is smaller
+                    current_len = end_idx - s_idx + 1
+                    if current_len < min_len:
+                        min_len = current_len
+                        start_idx = s_idx
+                    
+                    # Reset t_idx to 0 to look for the next window
+                    t_idx = 0
+                    
+            # Always move the forward pointer
+            s_idx += 1
+            
+        return "" if start_idx == -1 else s[start_idx : start_idx + min_len]
+
+
+
+
