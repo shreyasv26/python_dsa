@@ -106,3 +106,4 @@ def findPeakElement(self, nums: List[int]) -> int:
                 
         return -1
 
+
