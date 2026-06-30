@@ -6,15 +6,22 @@
 # | Balanced   | 0, 1, or 2            | Can vary slightly                    | Always          | O(log N)                             |
 # | Skewed     | Exactly 1 (except leaf)| Only one leaf at the very bottom    | Never           | Exactly O(N)                         |
 
+
+
+# list1.append([4, 5])   ->    [1, 2, 3, [4, 5]]
+# list2.extend([4, 5])   ->    [1, 2, 3, 4, 5]
+
+
 from collections import deque
-import re
+from collections import defaultdict
 
+# nodes_map = defaultdict(list)
 
-class Node:
-    def __init__(self, key):
-        self.data = key       # Stores the value of the node
-        self.left = None      # Reference to the left child node
-        self.right = None     # Reference to the right child node
+# Key '3' doesn't exist yet, but this works perfectly:
+# nodes_map[3].append(10)
+
+# nodes_map = {}
+# nodes_map[3].append(10)   this not posible bc it shows error
 
 class Solution:
     def create_binary_tree(self):
@@ -33,11 +40,11 @@ class Solution:
         return root
     
 # Definition for a binary tree node.
-# class TreeNode:
-#     def __init__(self, val=0, left=None, right=None):
-#         self.val = val
-#         self.left = left
-#         self.right = right
+class Node:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
 
 def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
     res = []
@@ -313,6 +320,180 @@ def zigzagLevelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
 
     # return ans
 
+class TraverseBoundary:
+    def boundaryTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        if not root:
+            return []
+            
+        res = []
+        
+        # If the root is not a leaf node, add it to the result
+        if not self.isLeaf(root):
+            res.append(root.val)
+            
+        # Step 1: Add Left Boundary (excluding leaves)
+        self.addLeftBoundary(root.left, res)
+        
+        # Step 2: Add all Leaf Nodes
+        self.addLeaves(root, res)
+        
+        # Step 3: Add Right Boundary (excluding leaves, in reverse order)
+        self.addRightBoundary(root.right, res)
+        
+        return res
 
+    def isLeaf(self, node: Optional[TreeNode]) -> bool:
+        return node is not None and node.left is None and node.right is None
 
+    def addLeftBoundary(self, node: Optional[TreeNode], res: List[int]):
+        curr = node
+        while curr:
+            if not self.isLeaf(curr):
+                res.append(curr.val)
+            # Prioritize moving left. If left doesn't exist, move right.
+            curr = curr.left if curr.left else curr.right
 
+    def addLeaves(self, node: Optional[TreeNode], res: List[int]):
+        if not node:
+            return
+        if self.isLeaf(node):
+            res.append(node.val)
+            return
+        # Standard DFS to collect leaves from left to right
+        self.addLeaves(node.left, res)
+        self.addLeaves(node.right, res)
+
+    def addRightBoundary(self, node: Optional[TreeNode], res: List[int]):
+        curr = node
+        temp = []
+        while curr:
+            if not self.isLeaf(curr):
+                temp.append(curr.val)
+            # Prioritize moving right. If right doesn't exist, move left.
+            curr = curr.right if curr.right else curr.left
+            
+        # Reverse the right boundary to ensure counter-clockwise order
+        res.extend(temp[::-1])
+
+class verticalTrversal1:
+    def verticalTraversal(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if not root:
+            return []
+            
+        # Map to store: { col: [(row, node_val), (row, node_val), ...] }
+        nodes_map = defaultdict(list)
+        
+        # Queue stores tuples of: (current_node, row, col)
+        q = deque([(root, 0, 0)])
+        
+        while q:
+            node, row, col = q.popleft()
+            
+            # Store the row and value at this column key
+            nodes_map[col].append((row, node.val))
+            
+            # Process left and right children
+            if node.left:
+                q.append((node.left, row + 1, col - 1))
+            if node.right:
+                q.append((node.right, row + 1, col + 1))
+                
+        res = []
+        
+        # Sort by column keys from leftmost to rightmost
+        for col in sorted(nodes_map.keys()):
+            # Sort the pairs within the same column by row index first, 
+            # and then by node value if row indices are identical
+            column_nodes = sorted(nodes_map[col], key=lambda x: (x[0], x[1]))
+            
+            # Extract only the node values for the final result
+            res.append([val for row, val in column_nodes])
+            
+        return res
+
+class Anothersoln:
+    def verticalTraversal(self, root: Optional[TreeNode]) -> List[List[int]]:
+        # Edge Case: If the tree is empty, return an empty list immediately
+        if not root:
+            return []
+            
+        nodes = []
+
+        def dfs(node, row, col):
+            if not node:
+                return
+            # Storing col first ensures Python's native sort handles column order first
+            nodes.append((col, row, node.val))
+            dfs(node.left, row + 1, col - 1)
+            dfs(node.right, row + 1, col + 1)
+
+        dfs(root, 0, 0)
+        
+        # Sorts by col, then by row, then by val automatically!
+        nodes.sort()
+
+        res = []
+        prev_col = float('-inf')
+
+        for col, row, val in nodes:
+            # Whenever the column changes, start a brand-new sublist
+            if col != prev_col:
+                res.append([])
+                prev_col = col
+            # res[-1] targets the active/current column list we are filling
+            res[-1].append(val)
+
+        return res
+    
+class Symmertic:
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        if not root:
+            return True
+        
+        return self.isMirror(root.left, root.right)
+
+    def isMirror(self, left: Optional[TreeNode], right: Optional[TreeNode]) -> bool:
+        if not left and not right:
+            return True
+            
+        if not left or not right or left.val != right.val:
+            return False
+            
+        return self.isMirror(left.left, right.right) and self.isMirror(left.right, right.left)
+
+class SideView:
+    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
+        res=[]
+        self.dfs(root,0,res)
+        return res
+
+    def dfs(self, node: Optional[TreeNode],level:int, res:List[int]):
+        if not node:
+            return
+        
+        if level==len(res):    #firsttime reaching that level so add it
+            res.append(node.val)
+        
+        self.dfs(node.right,level+1,res)   #priority right
+        self.dfs(node.left,level+1,res)
+
+def topView(self, root):
+    ans=[]
+
+    if not root:
+        return ans
+    
+    right=[]
+    curr=root
+    while curr:
+        if curr.right:
+            right.append(curr.right.val)
+    
+    left=[]
+    while curr:
+        if curr.left:
+            right.append(curr.left.val)
+
+    ans.extend(left)
+    ans.append(root.val)
+    ans.extend(right)
