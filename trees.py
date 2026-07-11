@@ -6,7 +6,11 @@
 # | Balanced   | 0, 1, or 2            | Can vary slightly                    | Always          | O(log N)                             |
 # | Skewed     | Exactly 1 (except leaf)| Only one leaf at the very bottom    | Never           | Exactly O(N)                         |
 
+# Height vs. Depth:
 
+# Height: Distance from a node down to its furthest leaf.
+
+# Depth: Distance from the root down to that node.
 
 # list1.append([4, 5])   ->    [1, 2, 3, [4, 5]]
 # list2.extend([4, 5])   ->    [1, 2, 3, 4, 5]
@@ -14,6 +18,7 @@
 
 from collections import deque
 from collections import defaultdict
+from typing import Optional
 
 # nodes_map = defaultdict(list)
 
@@ -141,24 +146,26 @@ def preorder2(self, root: Optional[TreeNode]) -> List[int]:
     return res
 
 def inorder2(self, root: Optional[TreeNode]) -> List[int]:
-    # Logic: We move down the tree as far left as possible, pushing every node onto the stack along the way. When we hit a None (the end of the left path), we pop from the stack (the Root/Current node), process it, and then move to its right child.
-    # left root right
     if not root:
         return []
     
-    stack,res=[root],[]
+    stack = []
+    res = []
+    curr = root  # Initialize curr properly
 
     while stack or curr:
-        curr=stack.pop()
-
+        # 1. Go down to the leftmost node of the current subtree
         while curr:
-            stack.append(curr.val)
-            curr=curr.next
+            stack.append(curr)  # Store the node object, not the val
+            curr = curr.left    # Move left (not .next)
+            
+        # 2. Backtrack: curr is now None, so pop the parent node from stack
+        curr = stack.pop()
+        res.append(curr.val)    # Process the Root/Current node
         
-        res.append(curr.val)
-
-        curr=curr.right
-
+        # 3. Move to the right subtree
+        curr = curr.right
+        
     return res
 
 def postorder2(self, root: Optional[TreeNode]) -> List[int]:
@@ -179,6 +186,7 @@ def postorder2(self, root: Optional[TreeNode]) -> List[int]:
     return res[::-1]
     
 def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+    # breadth first search bfs
     q=deque([root])
     ans=[]
 
@@ -247,9 +255,9 @@ class Diameter:
 
 class MaxSumPath:
     def maxPathSum(self, root: Optional[TreeNode]) -> int:
-        sum = [float('-inf')]
-        sum(root,sum)
-        return sum[0]
+        msum = [float('-inf')]
+        sum(root,msum)
+        return msum[0]
         
     def sum(self, root: Optional[TreeNode],sum:List[int]):
         if not root:
