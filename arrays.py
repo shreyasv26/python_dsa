@@ -359,9 +359,102 @@ def find_union_sorted(a: list, b: list) -> list:
         
     return res
     
+def findMaxConsecutiveOnes(self, nums):
+    count,maxcount=0,0
 
+    for i in range(len(nums)):
+        if nums[i]==1:              ## If current element is 1, increment count
+            count+=1
+        else:
+            count=0
+            maxcount=max(count,maxcount)
 
+    return maxcount
 
+def getSingleElement(self, arr):
+    xorr = 0
 
+        # XOR all elements — duplicates cancel out
+    for num in arr:
+        xorr ^= num
 
+    return xorr
 
+def remove_duplicates(nums: list) -> int:
+    if len(nums) == 0:
+        return 0
+    j = 1
+    for i in range(1, len(nums)):
+        if nums[i] != nums[i - 1]:
+            nums[j] = nums[i]
+            j += 1
+    return j
+
+def two_sum(nums: list, target: int) -> list:
+    mapping = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in mapping:
+            return [mapping[complement], i]
+        mapping[num] = i
+    return []
+
+def two_sum_ii(numbers: list, target: int) -> list:
+    left, right = 0, len(numbers) - 1
+    while left < right:
+        current_sum = numbers[left] + numbers[right]
+        if current_sum == target:
+            return [left, right]
+        if current_sum < target:
+            left += 1
+        else:
+            right -= 1
+    return []
+
+def three_sum(nums: list) -> list:
+    res = []
+    nums.sort()
+    for i in range(len(nums) - 2):
+        if i > 0 and nums[i] == nums[i - 1]:
+            continue
+        left = i + 1
+        right = len(nums) - 1
+        while left < right:
+            current_sum = nums[i] + nums[left] + nums[right]
+            if current_sum == 0:
+                res.append([nums[i], nums[left], nums[right]])
+                while left < right and nums[left] == nums[left + 1]: left += 1
+                while left < right and nums[right] == nums[right - 1]: right -= 1
+                left += 1
+                right -= 1
+            elif current_sum < 0:
+                left += 1
+            else:
+                right -= 1
+    return res
+
+def four_sum(nums: list, target: int) -> list:
+    res = []
+    if not nums or len(nums) < 4:
+        return res
+    nums.sort()
+    n = len(nums)
+    for i in range(n - 3):
+        if i > 0 and nums[i] == nums[i - 1]: continue
+        for j in range(i + 1, n - 2):
+            if j > i + 1 and nums[j] == nums[j - 1]: continue
+            left = j + 1
+            right = n - 1
+            while left < right:
+                current_sum = nums[i] + nums[j] + nums[left] + nums[right]
+                if current_sum == target:
+                    res.append([nums[i], nums[j], nums[left], nums[right]])
+                    while left < right and nums[left] == nums[left + 1]: left += 1
+                    while left < right and nums[right] == nums[right - 1]: right -= 1
+                    left += 1
+                    right -= 1
+                elif current_sum < target:
+                    left += 1
+                else:
+                    right -= 1
+    return res
