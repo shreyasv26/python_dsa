@@ -324,6 +324,17 @@ def moveZeroes(self, nums):
                 # Move j to next zero
             j += 1
 
+def move_zeroes(nums: list) -> None:
+    j = 0
+    i = 0
+    while i < len(nums) and j < len(nums):
+        if nums[i] != 0:
+            swap(i, j, nums)
+            j += 1
+            i += 1
+        else:
+            i += 1
+
 def find_union_sorted(a: list, b: list) -> list:
     res = []
     i, j = 0, 0
@@ -379,6 +390,15 @@ def getSingleElement(self, arr):
         xorr ^= num
 
     return xorr
+
+def single_number(nums: list) -> int:
+    hash_map = {}
+    for ele in nums:
+        hash_map[ele] = hash_map.get(ele, 0) + 1
+    for key, val in hash_map.items():
+        if val == 1:
+            return key
+    return -1
 
 def remove_duplicates(nums: list) -> int:
     if len(nums) == 0:
@@ -458,3 +478,461 @@ def four_sum(nums: list, target: int) -> list:
                 else:
                     right -= 1
     return res
+
+#Dutch National Flag
+def sort_colors(nums: list) -> None:
+    low, mid, high = 0, 0, len(nums) - 1
+    while mid <= high:
+        if nums[mid] == 0:
+            swap(low, mid, nums)
+            mid += 1
+            low += 1
+        elif nums[mid] == 1:
+            mid += 1
+        else:
+            swap(mid, high, nums)
+            high -= 1
+
+#BOYER-MOORE Algo
+def majorityElementn2(self, nums: List[int]) -> int:
+        n = len(nums)
+        cnt = 0
+        el = 0
+        
+        # Applying the algorithm
+        for num in nums:
+            if cnt == 0:
+                cnt = 1
+                el = num
+            elif el == num:
+                cnt += 1
+            else:
+                cnt -= 1
+        
+        """ Checking if the stored element is the majority element"""
+        cnt1 = nums.count(el)
+        
+        # Return element if it is a majority element
+        if cnt1 > (n // 2):
+            return el
+        
+        # Return -1 if no such element found
+        return -1
+
+def majority_elementn3(nums: list) -> list:
+    mapping = {}
+    count = len(nums) // 3
+    res = []
+    for num in nums:
+        mapping[num] = mapping.get(num, 0) + 1
+        if mapping[num] == count + 1:
+            res.append(num)
+    return res
+#Kadane algo
+def maxSubArray(self, nums: List[int]) -> int:
+        
+        # maximum sum
+        maxi = float('-inf') 
+        
+        # current sum of subarray
+        sum = 0 
+        
+        # Iterate through the array
+        for i in range(len(nums)):
+            
+            # Add current element to the sum
+            sum += nums[i] 
+            
+            # Update maxi if current sum is greater
+            if sum > maxi:
+                maxi = sum 
+            
+            # Reset sum to 0 if it becomes negative
+            if sum < 0:
+                sum = 0 
+        
+        return maxi
+
+def stockbuySell(self, prices):
+        # Initialize the minimum price to a large number
+        min_price = float('inf')
+
+        # Initialize the maximum profit to 0
+        max_profit = 0
+
+        # Traverse each price in the array
+        for price in prices:
+            # If current price is less than min_price, update min_price
+            if price < min_price:
+                min_price = price
+            # Else calculate profit and update max_profit if it's greater
+            else:
+                max_profit = max(max_profit, price - min_price)
+
+        # Return the maximum profit found
+        return max_profit
+
+def rearrange_by_sign(self, A) -> List[int]:
+        n = len(A)
+        ans = [0] * n  # Initialize result array with zeros
+
+        pos_index = 0  # Even indices for positive numbers
+        neg_index = 1  # Odd indices for negative numbers
+
+        for i in range(n):
+            if A[i] < 0:
+                # Place negative at odd index
+                ans[neg_index] = A[i]
+                neg_index += 2
+            else:
+                # Place positive at even index
+                ans[pos_index] = A[i]
+                pos_index += 2
+
+        return ans
+
+def next_permutation(nums: list) -> None:
+    ind = -1
+    n = len(nums)
+    for i in range(n - 2, -1, -1):
+        if nums[i] < nums[i + 1]:
+            ind = i
+            break
+    if ind != -1:
+        for i in range(n - 1, ind, -1):
+            if nums[i] > nums[ind]:
+                swap(i, ind, nums)
+                break
+    reverse_range(nums, ind + 1, n - 1)
+
+def leaders(self, nums):
+        ans = []
+        
+        if not nums:
+            return ans
+        
+        # Last element of the list is always a leader
+        max_val = nums[-1]
+        ans.append(nums[-1])
+        
+        # Check elements from right to left
+        for i in range(len(nums) - 2, -1, -1):
+            if nums[i] > max_val:
+                ans.append(nums[i])
+                max_val = nums[i]
+        
+        '''Reverse the list to match the required output order'''
+        ans.reverse()
+        
+        # Return the leaders
+        return ans
+
+def longestConsecutive(self, nums):
+        n = len(nums)
+        # If the array is empty
+        if n == 0:
+            return 0 
+
+        # Initialize the longest sequence length
+        longest = 1 
+        st = set()
+
+        # Put all the array elements into the set
+        for i in range(n):
+            st.add(nums[i])
+
+        # Traverse the set to find the longest sequence
+        for it in st:
+            # Check if 'it' is a starting number of a sequence
+            if it - 1 not in st:
+                # Initialize the count of the current sequence
+                cnt = 1 
+                # Starting element of the sequence
+                x = it 
+
+                # Find consecutive numbers in the set
+                while x + 1 in st:
+                    # Move to the next element in the sequence
+                    x = x + 1 
+                    # Increment the count of the sequence
+                    cnt = cnt + 1 
+                # Update the longest sequence length
+                longest = max(longest, cnt)
+        return longest
+
+def spiral_order(matrix: list[list[int]]) -> list:
+    r, c = len(matrix), len(matrix[0])
+    left, right = 0, c - 1
+    top, bottom = 0, r - 1
+    res = []
+    while top <= bottom and left <= right:
+        for i in range(left, right + 1):
+            res.append(matrix[top][i])
+        top += 1
+        for i in range(top, bottom + 1):
+            res.append(matrix[i][right])
+        right -= 1
+        if top <= bottom:
+            for i in range(right, left - 1, -1):
+                res.append(matrix[bottom][i])
+            bottom -= 1
+        if left <= right:
+            for i in range(bottom, top - 1, -1):
+                res.append(matrix[i][left])
+            left += 1
+    return res
+
+def rotateClockwise(self, matrix):
+        n = len(matrix)
+
+        # Step 1: Transpose the matrix
+        for i in range(n):
+            for j in range(i + 1, n):
+                # Swap element at (i, j) with (j, i)
+                matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+
+        # Step 2: Reverse each row
+        for i in range(n):
+            # Reverse the current row to simulate clockwise rotation
+            matrix[i].reverse()
+
+def longest_subarray(arr: list, k: int) -> int:
+    max_len = 0
+    current_sum = 0
+    sum_map = {}
+    for i in range(len(arr)):
+        current_sum += arr[i]
+        if current_sum == k:
+            max_len = max(max_len, i + 1)
+        rem = current_sum - k
+        if rem in sum_map:
+            length = i - sum_map[rem]
+            max_len = max(max_len, length)
+        if current_sum not in sum_map:
+            sum_map[current_sum] = i
+    return max_len
+
+def max_sub_array(nums: list) -> int:
+    curr = max_val = nums[0]
+    for i in range(1, len(nums)):
+        curr = max(nums[i], curr + nums[i])
+        max_val = max(max_val, curr)
+    return max_val
+
+def find_subarray(arr: list) -> list:
+    current_sum = 0
+    max_sum = -float('inf')
+    start = 0
+    ans_start = ans_end = -1
+    for i in range(len(arr)):
+        if arr[i] >= 0:
+            current_sum += arr[i]
+            if current_sum > max_sum or (current_sum == max_sum and (i - start > ans_end - ans_start)):
+                max_sum = current_sum
+                ans_start = start
+                ans_end = i
+            if current_sum < 0:
+                current_sum = 0
+        else:
+            current_sum = 0
+            start = i + 1
+            
+    if ans_start == -1:
+        return [-1]
+        
+    return arr[ans_start:ans_end + 1] # Python slicing syntax
+
+def max_subarray_sum_circular(nums: list) -> int:
+    min_curr = min_val = max_curr = max_val = total = nums[0]
+    for i in range(1, len(nums)):
+        min_curr = min(nums[i], nums[i] + min_curr)
+        min_val = min(min_val, min_curr)
+        max_curr = max(nums[i], nums[i] + max_curr)
+        max_val = max(max_val, max_curr)
+        total += nums[i]
+        
+    if max_val < 0:
+        return max_val
+    return max(max_val, total - min_val)
+
+def max_product(nums: list) -> int:
+    min_val = max_val = ans = nums[0]
+    for i in range(1, len(nums)):
+        if nums[i] < 0:
+            min_val, max_val = max_val, min_val  # elegant swap trick
+        min_val = min(nums[i], min_val * nums[i])
+        max_val = max(nums[i], max_val * nums[i])
+        ans = max(ans, max_val)
+    return ans
+
+def subarray_sum(nums: list, k: int) -> int:
+    mapping = {0: 1}
+    pre_sum = count = 0
+    for ele in nums:
+        pre_sum += ele
+        rem = pre_sum - k
+        count += mapping.get(rem, 0)
+        mapping[pre_sum] = mapping.get(pre_sum, 0) + 1
+    return count
+
+def genrow(row: int) -> list:
+    ans = 1
+    ans_row = [1]
+    for col in range(1, row):
+        ans *= (row - col)
+        ans //= col
+        ans_row.append(ans)
+    return ans_row
+
+def generate_pascal(num_rows: int) -> list[list[int]]:
+    ans = []
+    for i in range(1, num_rows + 1):
+        ans.append(genrow(i))
+    return ans
+
+def merge_intervals(intervals: list[list[int]]) -> list[list[int]]:
+    intervals.sort(key=lambda x: x[0])  # equivalent to custom comparator lambdas in Java
+    merged = []
+    for interval in intervals:
+        if not merged or merged[-1][1] < interval[0]:
+            merged.append(interval)
+        else:
+            merged[-1][1] = max(merged[-1][1], interval[1])
+    return merged
+
+def merge_sorted_arrays(nums1: list, m: int, nums2: list, n: int) -> None:
+    i, j, k = m - 1, n - 1, m + n - 1
+    while i >= 0 and j >= 0:
+        if nums1[i] > nums2[j]:
+            nums1[k] = nums1[i]
+            i -= 1
+        else:
+            nums1[k] = nums2[j]
+            j -= 1
+        k -= 1
+    while j >= 0:
+        nums1[k] = nums2[j]
+        j -= 1
+        k -= 1
+
+def find_missing_repeating_numbers(nums: list) -> list:
+    i, n = 0, len(nums)
+    while i < n:
+        correct = nums[i] - 1
+        if nums[i] != nums[correct]:
+            nums[i], nums[correct] = nums[correct], nums[i]
+        else:
+            i += 1
+    for index in range(n):
+        if nums[index] != index + 1:
+            return [nums[index], index + 1]
+    return [-1, -1]
+
+class InversionCount:
+    def number_of_inversions(self, nums: list) -> int:
+        return self._merge_sort(nums, 0, len(nums) - 1)
+
+    def _merge_sort(self, arr: list, left: int, right: int) -> int:
+        count = 0
+        if left < right:
+            mid = left + (right - left) // 2
+            count += self._merge_sort(arr, left, mid)
+            count += self._merge_sort(arr, mid + 1, right)
+            count += self._merge(arr, left, mid, right)
+        return count
+
+    def _merge(self, arr: list, left: int, mid: int, right: int) -> int:
+        temp = [0] * (right - left + 1)
+        i, j, k = left, mid + 1, 0
+        inversions = 0
+        while i <= mid and j <= right:
+            if arr[i] <= arr[j]:
+                temp[k] = arr[i]
+                i += 1
+            else:
+                temp[k] = arr[j]
+                j += 1
+                inversions += (mid - i + 1)
+            k += 1
+        while i <= mid:
+            temp[k] = arr[i]
+            i += 1
+            k += 1
+        while j <= right:
+            temp[k] = arr[j]
+            j += 1
+            k += 1
+        for p in range(len(temp)):
+            arr[left + p] = temp[p]
+        return inversions
+
+def unique_paths(m: int, n: int) -> int:
+    N = m + n - 2
+    r = m - 1
+    res = 1
+    for i in range(1, r + 1):
+        res = res * (N - r + i) // i
+    return res
+
+def length_of_longest_substring(s: str) -> int:
+    if len(s) == 0: return 0
+    mapping = {}
+    max_len = left = 0
+    for right in range(len(s)):
+        c = s[right]
+        if c in mapping and mapping[c] >= left:
+            left = mapping[c] + 1
+        mapping[c] = right
+        max_len = max(max_len, right - left + 1)
+    return max_len
+
+def max_meetings(start: list, end: list) -> list:
+    meetings = []
+    for i in range(len(start)):
+        meetings.append([end[i], start[i], i + 1])
+    meetings.sort(key=lambda x: x[0])
+    result = []
+    last_end = -1
+    for m in meetings:
+        if m[1] > last_end:
+            result.append(m[2])
+            last_end = m[0]
+    return result
+
+def count_platforms(n: int, arr: list, dep: list) -> int:
+    arr.sort()
+    dep.sort()
+    platforms = result = 1
+    i, j = 1, 0
+    while i < n and j < n:
+        if arr[i] <= dep[j]:
+            platforms += 1
+            i += 1
+        else:
+            platforms -= 1
+            j += 1
+        result = max(result, platforms)
+    return result
+
+def matrix_sum(nums: list[list[int]]) -> int:
+    for row in nums:
+        row.sort()
+    ans = 0
+    for col in range(len(nums[0]) - 1, -1, -1):
+        max_val = 0
+        for row in range(len(nums)):
+            max_val = max(max_val, nums[row][col])
+        ans += max_val
+    return ans
+
+
+
+
+
+
+
+
+
+
+
+

@@ -64,19 +64,19 @@ class Solution:
                 
         return True
     
-    def canJump(self, nums: List[int]) -> bool:
-        maxlen,leng=0,0
+    def can_jump(self, nums):
+        max_index = 0  # The farthest index we can currently reach
 
+        # Traverse the array
         for i in range(len(nums)):
-            if i>maxlen:     # acnt just loop on all
-                return False
-            
-            maxlen=max(maxlen,i+nums[i])
+            if i > max_index:
+                return False  # Cannot proceed further
 
-            if maxlen>=len(nums)-1:
-                return True
-            
-        return maxlen>=len(nums)-1
+            # Update farthest reachable index
+            max_index = max(max_index, i + nums[i])
+
+        # If loop completes, we can reach the last index
+        return True
 
     def jump(self, nums: List[int]) -> int:
         jump,maxlen=0,0
@@ -210,7 +210,9 @@ def insert(self, intervals: List[List[int]], newInterval: List[int]) -> List[Lis
                 
         return left + [newInterval] + right
 
-    # for idx, s, e in [(i, inv[0], inv[1]) for i, inv in enumerate(intervals)]:    i=index and inv=each list inside the list
+    # for idx, s, e in [(i, inv[0], inv[1]) 
+    # for i, inv in enumerate(intervals)]:    
+    # i=index and inv=each list inside the list
     # for i, (start, end) in enumerate(intervals):
     # print(f"Interval row {i} runs from {start} to {end}")
     
