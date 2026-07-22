@@ -257,6 +257,7 @@ class MaxSumPath:
     def maxPathSum(self, root: Optional[TreeNode]) -> int:
         msum = [float('-inf')]
         sum(root,msum)
+
         return msum[0]
         
     def sum(self, root: Optional[TreeNode],sum:List[int]):
@@ -266,8 +267,8 @@ class MaxSumPath:
         lsum=max(0,self.sum(root.left,sum))
         rsum=max(0,self.sum(root.right,sum))
 
-        sum[0]=max(sum[0],lsum+rsum+root.val)
-        return root.val+max(lsum,rsum)
+        sum[0]=max(sum[0],lsum+rsum+root.val)     
+        return root.val+max(lsum,rsum) #for each node
     
 def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
     
@@ -419,7 +420,7 @@ class verticalTrversal1:
             
         return res
 
-class Anothersoln:
+class AnothersolnBetter:
     def verticalTraversal(self, root: Optional[TreeNode]) -> List[List[int]]:
         # Edge Case: If the tree is empty, return an empty list immediately
         if not root:
@@ -452,7 +453,56 @@ class Anothersoln:
             res[-1].append(val)
 
         return res
+     
+def topView(self, root):
+    if not root:
+        return []
     
+    # Map to store: { col: node_val }
+    top_map = {}
+    
+    # Queue stores tuples of: (node, column)
+    q = deque([(root, 0)])
+    
+    while q:
+        node, col = q.popleft()
+        
+        # Only record the FIRST node that appears at this column
+        if col not in top_map:
+            top_map[col] = node.val
+            
+        if node.left:
+            q.append((node.left, col - 1))
+        if node.right:
+            q.append((node.right, col + 1))
+            
+    # Sort by column index from leftmost to rightmost
+    return [top_map[col] for col in sorted(top_map.keys())]
+
+def bottomView(self, root):
+    if not root:
+        return []
+    
+    # Map to store: { col: node_val }
+    bottom_map = {}
+    
+    # Queue stores tuples of: (node, column)
+    q = deque([(root, 0)])
+    
+    while q:
+        node, col = q.popleft()
+        
+        # ALWAYS update/overwrite the value at this column
+        bottom_map[col] = node.val
+            
+        if node.left:
+            q.append((node.left, col - 1))
+        if node.right:
+            q.append((node.right, col + 1))
+            
+    # Sort by column index from leftmost to rightmost
+    return [bottom_map[col] for col in sorted(bottom_map.keys())]
+
 class Symmertic:
     def isSymmetric(self, root: Optional[TreeNode]) -> bool:
         if not root:
@@ -485,23 +535,57 @@ class SideView:
         self.dfs(node.right,level+1,res)   #priority right
         self.dfs(node.left,level+1,res)
 
-def topView(self, root):
-    ans=[]
+class getPAth:
+    # Function to find the path from root to a given node
+    def getPath(self, root, arr, x):
+        if root is None:
+            return False
 
-    if not root:
-        return ans
-    
-    right=[]
-    curr=root
-    while curr:
-        if curr.right:
-            right.append(curr.right.val)
-    
-    left=[]
-    while curr:
-        if curr.left:
-            right.append(curr.left.val)
+        arr.append(root.val)
 
-    ans.extend(left)
-    ans.append(root.val)
-    ans.extend(right)
+        if root.val == x:
+            return True
+
+        # Recurse on left and right
+        if self.getPath(root.left, arr, x) or self.getPath(root.right, arr, x):
+            return True
+
+        # Backtrack if not found
+        arr.pop()
+        return False
+
+    # Function to return the final path list
+    def solve(self, root, x):
+        # Initialize result path
+        arr = []
+
+        # If tree is empty
+        if root is None:
+            return arr
+
+        # Get path using helper
+        self.getPath(root, arr, x)
+        return arr
+
+def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+    # Base case
+        if root is None or root == p or root == q:
+            return root
+        
+        # Search in left and right subtrees
+        left = self.lowestCommonAncestor(root.left, p, q)
+        right = self.lowestCommonAncestor(root.right, p, q)
+        
+        # Result
+        if left is None:
+            return right
+        elif right is None:
+            return left
+        else: # Both left and right are not null, we found our result
+            return root        
+    
+
+
+
+
+
