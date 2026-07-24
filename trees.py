@@ -270,8 +270,7 @@ class MaxSumPath:
         sum[0]=max(sum[0],lsum+rsum+root.val)     
         return root.val+max(lsum,rsum) #for each node
     
-def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
-    
+def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool: 
     if not p and not q:    #if both r null
         return True
     if not p or not q:     #if anyone of em is null

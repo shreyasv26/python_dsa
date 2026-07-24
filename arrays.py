@@ -528,6 +528,7 @@ def majority_elementn3(nums: list) -> list:
         if mapping[num] == count + 1:
             res.append(num)
     return res
+
 #Kadane algo
 def maxSubArray(self, nums: List[int]) -> int:
         
