@@ -18,6 +18,8 @@
 
 from collections import deque
 from collections import defaultdict
+from pydoc import apropos
+from statistics import quantiles
 from typing import Optional
 
 # nodes_map = defaultdict(list)
@@ -583,6 +585,191 @@ def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -
         else: # Both left and right are not null, we found our result
             return root        
     
+def widthOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        if not root:
+            return 0
+        
+        ans = 0
+        q = deque([(root, 0)])  # pair: (node, index)
+        
+        while q:
+            size = len(q)
+            mmin = q[0][1]      # minimum id at the current level
+            first, last = 0, 0
+            
+            for i in range(size):
+                node, curr_idx = q.popleft()
+                cur_id = curr_idx - mmin  # make id start from 0 to prevent overflow
+                
+                if i == 0:
+                    first = cur_id
+                if i == size - 1:
+                    last = cur_id
+                
+                if node.left:
+                    q.append((node.left, cur_id * 2 + 1))
+                if node.right:
+                    q.append((node.right, cur_id * 2 + 2))
+            
+            ans = max(ans, last - first + 1)
+            
+        return ans
+
+def checkTree(self, root: Optional[TreeNode]) -> bool:
+    if not root:
+        return False
+
+    return root.val==root.left.val+root.right.val
+
+class distanceK:
+    def distanceK(self, root: TreeNode, target: TreeNode, k: int) -> List[int]:
+        if not root:
+            return []
+        parent={}
+        self.map_parent(root,parent)
+
+        return self.bfsTarget(target,parent,k)
+
+
+    def map_parent(self,root:TreeNode,parent:dict):
+        # BSF
+        q=deque()
+        q.append(root)
+
+        while q:
+            node=q.popleft()
+
+            if node.left:
+                parent[node.left]=node
+                q.append(node.left)
+
+            if node.right:
+                parent[node.right]=node
+                q.append(node.right)
+
+    def bfsTarget(self,target: TreeNode,parent:dict, k:int ):
+        q=deque()
+        visited=set()
+
+        q.append(target)
+        visited.add(target)
+
+        curr_level=0
+
+        while q:
+            if curr_level==k:
+                break
+
+            for _ in range(len(q)):
+                node=q.popleft()
+                if node.left and node.left not in visited:     #left
+                    visited.add(node.left)
+                    q.append(node.left)
+
+                if node.right and node.right not in visited:    #right
+                    visited.add(node.right)
+                    q.append(node.right)
+
+                if node in parent and parent[node] not in visited:  #up
+                    visited.add(parent[node])
+                    q.append(parent[node])
+
+            curr_level+=1
+
+        return [node.val for node in q]
+
+class timeToBurn:
+    def amountOfTime(self, root: Optional[TreeNode], start: int) -> int:
+        if root.left== None and root.right==None:
+            return 0
+        
+        parent={}
+        start_node = self.map_parent2(root,parent,start)
+
+        return self.bfsStart(start_node ,parent)
+
+    def map_parent2(self,root:TreeNode,parent:dict, start:int):
+        # BSF
+        q=deque()
+        q.append(root)
+
+        while q:
+            node=q.popleft()
+
+            if node.val==start:
+                start_node=node
+
+            if node.left:
+                parent[node.left]=node
+                q.append(node.left)
+
+            if node.right:
+                parent[node.right]=node
+                q.append(node.right)
+
+        return start_node
+
+    def bfsStart(self,target: TreeNode,parent:dict ):
+        q=deque()
+        visited=set()
+
+        q.append(target)
+        visited.add(target)
+
+        time=0
+
+        while q:
+            for _ in range(len(q)):
+                node=q.popleft()
+                if node.left and node.left not in visited:     #left
+                    visited.add(node.left)
+                    q.append(node.left)
+
+                if node.right and node.right not in visited:    #right
+                    visited.add(node.right)
+                    q.append(node.right)
+
+                if node in parent and parent[node] not in visited:  #up
+                    visited.add(parent[node])
+                    q.append(parent[node])
+
+            if q:
+                time+=1
+
+        return time
+
+class CountNodes:
+    def countNodes(self, root):
+        if not root:
+            return 0
+        
+        lh = self.leftH(root)
+        rh = self.rightH(root)
+        
+        # Replace (1 << lh) - 1 with exponentiation    
+        if lh == rh:
+            return (2 ** lh) - 1     #2^h-1 is height of complete BT
+        
+        return 1 + self.countNodes(root.left) + self.countNodes(root.right)
+
+    def leftH(self,node) -> int:
+        height=0
+
+        while node:
+            height+=1
+            node=node.left
+
+        return height
+
+    def rightH(self,node) -> int:
+        height=0
+
+        while node:
+            height+=1
+            node=node.right
+
+        return height
+
 
 
 

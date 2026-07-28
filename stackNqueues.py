@@ -150,6 +150,7 @@ def nextGreaterElement(self, nums1: List[int], nums2: List[int]) -> List[int]:
         map[num]=-1
 
     return [map[ch] for ch in nums1]
+
 def nextGreaterEle(self,nums: List[int]) -> List[int]:
     res=[-1]*len(nums)
     stack=[]
@@ -389,7 +390,27 @@ def trap(self, height: List[int]) -> int:
                 water += right_max - height[right]
 
         return water
-    
+
+def trapOtherSoln(self, h: List[int]) -> int:
+        l = 0
+        r = len(h) - 1
+        lmax, rmax = 0, 0
+        ans = 0
+
+        while l < r:
+            if h[l] < h[r]:
+                # Right boundary is taller, so h[l] is the bottleneck
+                lmax = max(lmax, h[l])
+                ans += lmax - h[l]
+                l += 1
+            else:
+                # Left boundary is taller (or equal), so h[r] is the bottleneck
+                rmax = max(rmax, h[r])
+                ans += rmax - h[r]
+                r -= 1
+
+        return ans
+
 def largestRectangleArea(self, heights: List[int]) -> int:
     stack=[]
     maxx=0
