@@ -15,11 +15,47 @@
 # list1.append([4, 5])   ->    [1, 2, 3, [4, 5]]
 # list2.extend([4, 5])   ->    [1, 2, 3, 4, 5]
 
+# 1. Preorder + Inorder → Unique tree
+
+# Preorder: Root → Left → Right
+# Inorder: Left → Root → Right
+
+# Example:
+
+# Preorder = [3, 9, 20, 15, 7]
+# Inorder  = [9, 3, 15, 20, 7]
+
+# Take the first preorder element as root:
+
+# Root = 3
+
+# Inorder:
+# [9] 3 [15,20,7]
+#  ↑       ↑
+# left    right
+
+#     3
+#    / \
+#   9   20
+#      /  \
+#     15   7
+
+# 2. Postorder + Inorder → Unique tree
+
+# Postorder: Left → Right → Root
+
+# Now the last element of postorder is the root.
+
+# Postorder = [9, 15, 7, 20, 3]
+# Inorder   = [9, 3, 15, 20, 7]
+
+# Root = 3.
+
+# The important trick: because we're consuming postorder backwards, construct:
+
 
 from collections import deque
 from collections import defaultdict
-from pydoc import apropos
-from statistics import quantiles
 from typing import Optional
 
 # nodes_map = defaultdict(list)
@@ -770,8 +806,47 @@ class CountNodes:
 
         return height
 
+def buildTree(self, preorder, inorder):
+        # Create a hashmap to store inorder indices
+        in_map = {val: idx for idx, val in enumerate(inorder)}
 
+        # Helper function to build tree recursively
+        def build(preStart, preEnd, inStart, inEnd):
+            if preStart > preEnd or inStart > inEnd:
+                return None
 
+            # Root from preorder
+            root_val = preorder[preStart]
+            root = TreeNode(root_val)
 
+            # Find index in inorder
+            inRoot = in_map[root_val]
+            numsLeft = inRoot - inStart    #num of nodes on the left
 
+            # Recurse on left and right
+            root.left = build(preStart + 1, preStart + numsLeft, inStart, inRoot - 1)
+            root.right = build(preStart + numsLeft + 1, preEnd, inRoot + 1, inEnd)
 
+            return root
+
+        return build(0, len(preorder) - 1, 0, len(inorder) - 1)
+
+def buildTree(self, inorder: list[int], postorder: list[int]) -> Optional[TreeNode]:
+        in_map = {inorder[i]: i for i in range(len(inorder))}
+
+        def build(postStart, postEnd, inStart, inEnd):
+            if postStart > postEnd or inStart > inEnd:
+                return None
+
+            root_val = postorder[postEnd]
+            root = TreeNode(root_val)
+
+            inRoot = in_map[root_val]
+            numsLeft = inRoot - inStart
+
+            root.left = build(postStart, postStart + numsLeft - 1, inStart, inRoot - 1)
+            root.right = build(postStart + numsLeft, postEnd - 1, inRoot + 1, inEnd)
+
+            return root
+
+        return build(0, len(postorder) - 1, 0, len(inorder) - 1)
