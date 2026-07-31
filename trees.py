@@ -850,3 +850,251 @@ def buildTree(self, inorder: list[int], postorder: list[int]) -> Optional[TreeNo
             return root
 
         return build(0, len(postorder) - 1, 0, len(inorder) - 1)
+
+
+#Binary Search Tree (BST)  O(logN)   
+#rightmost node is max n leftmost node is min
+
+def searchBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    curr= root
+
+    while curr:
+        if curr.val==val:
+            return curr
+        elif curr.val>val:
+            curr=curr.left
+        else:
+            curr=curr.right
+
+    return None
+
+def ceilingBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    curr=root
+    ceil=None
+
+    while curr:
+        if curr.val>val:
+            ceil=curr
+            curr=curr.left
+        elif curr.val==val:
+            return ceil
+        else:
+            curr=curr.right
+
+    return ceil
+
+def floorBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    curr=root
+    floor=None
+
+    while curr:
+        if curr.val>val:
+            curr=curr.left
+        elif curr.val==val:
+            return floor
+        else:
+            floor=curr
+            curr=curr.right
+
+    return floor
+
+def insertIntoBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    if not root:
+        return TreeNode(val)
+
+    curr=root
+    prev=None
+    while curr:
+        if curr.val>val:
+            prev=curr
+            curr=curr.left
+        else:
+            prev=curr
+            curr=curr.right
+
+    if prev.val>val:
+        prev.left=TreeNode(val)
+    else:
+        prev.right=TreeNode(val)
+
+    return root
+
+class DeleteNode:
+    def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
+        if not root:
+            return None
+
+        if root.val == key:
+            return self.helper(root)
+        
+        curr = root
+        while curr:
+            if curr.val > key:
+                if curr.left and curr.left.val == key:
+                    curr.left = self.helper(curr.left)
+                    break
+                curr = curr.left
+            else:
+                if curr.right and curr.right.val == key:
+                    curr.right = self.helper(curr.right)
+                    break
+                curr = curr.right
+        
+        return root
+
+    def helper(self, node: TreeNode) -> Optional[TreeNode]:
+        if not node.left:
+            return node.right
+        if not node.right:
+            return node.left
+
+        right_child = node.right
+        last_right = self.find_last_right(node.left)
+        last_right.right = right_child
+        return node.left
+
+    def find_last_right(self, node: TreeNode) -> TreeNode:
+        while node.right:
+            node = node.right
+        return node
+
+#  in-order traveral of BST gives sorted values which can be stored in array   O(NlogN)
+
+def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+    self.k=k
+    self.ans=None
+
+
+    def inorder(node):
+        #  nonlocal k,ans  Tells Python to modify 'k' and 'ans' from the parent function scope
+        if not node and self.ans is not None:
+            return 
+        
+        inorder(root.left)
+
+        self.k-=1
+        if self.k==0:
+            self.ans=node.val
+            return
+        
+        inorder(node.right)
+
+    inorder(root)
+    return self.ans
+
+def kthLargest(self, root: Optional[TreeNode], k: int) -> int:
+        self.k = k
+        self.ans = None
+
+        def reverse_inorder(node):
+            if not node or self.ans is not None:
+                return
+
+            reverse_inorder(node.right)
+
+            self.k -= 1
+            if self.k == 0:
+                self.ans = node.val
+                return
+
+            reverse_inorder(node.left)
+
+        reverse_inorder(root)
+        return self.ans
+
+class ValidBst:
+    def isValidBST(self, root: Optional[TreeNode]) -> bool:
+        return valid(root,min=float("-inf"),max=float("inf"))
+        
+    def valid(self,root: Optional[TreeNode], min,max):
+        if not root:
+            return True
+
+        if not (min<root.val<max):
+            return False
+        
+        return self.valid (root.left,min,root.val) and self.valid(root.right,root.val,max)
+
+def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+    if root==None or p==root or q==root:
+        return root
+
+    curr=root
+    while curr:
+        if curr.val>p.val and curr.val>q.val:
+            curr=curr.left
+        elif curr.val<p.val and curr.val<q.val:
+            curr=curr.right
+        else:
+            return curr
+
+def bstFromPreorder(self, preorder: List[int]) -> Optional[TreeNode]:
+        self.i = 0
+
+        def build(upper_bound=float("inf")):
+            # Stop if all elements are processed or the current element exceeds upper bound
+            if self.i == len(preorder) or preorder[self.i] > upper_bound:
+                return None
+
+            root = TreeNode(preorder[self.i])
+            self.i += 1  # Advance the index pointer globally
+
+            # Construct left subtree with upper bound = current node's value
+            root.left = build(root.val)
+            root.right = build(upper_bound)
+
+            return root
+
+        return build()
+
+def inorderSuccessor(self, root: 'TreeNode', p: 'TreeNode') -> 'TreeNode | None':
+    successor=None
+
+    while root:
+        if root.val<=p.val:
+            root=root.right
+        else:
+            successor=root
+            root=root.left
+
+    return successor
+
+def twosum(self, root: Optional[TreeNode], k: int) -> bool:
+        seen = set()
+
+        def dfs(node):
+            if not node:
+                return False
+
+            # Check if complement exists
+            if k - node.val in seen:
+                return True
+
+            seen.add(node.val)
+
+            # Search left and right subtrees
+            return dfs(node.left) or dfs(node.right)
+
+        return dfs(root)
+
+class BSTIterator:
+    def __init__(self, root: Optional[TreeNode]):
+        self.stack=[]
+        self.pushAll(root)
+        
+    def next(self) -> int:
+        node=self.stack.pop()
+
+        if node.right:
+            self.pushAll(node.right)
+        
+        return node.val
+        
+    def hasNext(self) -> bool:
+        return len(self.stack)>0
+
+    def pushAll(self,node:Optional[TreeNode]):
+        while node:
+            self.stack.append(node)
+            node=node.left
+
