@@ -1098,3 +1098,115 @@ class BSTIterator:
             self.stack.append(node)
             node=node.left
 
+def recoverTree(self, root: Optional[TreeNode]) -> None:
+        self.first=None
+        self.middle = None
+        self.last = None
+        self.prev = TreeNode(float("-inf"))
+        def inorder(node: Optional[TreeNode]):
+            if not node:
+                return
+
+            inorder(node.left)
+
+    # Check if current node violates sorted BST order relative to prev
+            if self.prev and node.val < self.prev.val:
+                # First violation encountered
+                if not self.first:
+                    self.first = self.prev
+                    self.middle = node
+                # Second violation encountered
+                else:
+                    self.last = node
+
+            # Update prev to the current node before traversing right
+            self.prev = node
+
+            inorder(node.right)
+
+        # Run in-order traversal to locate swapped nodes
+        inorder(root)
+
+        # Fix swapped values:
+        # Case 1: Non-adjacent nodes swapped -> swap first and last
+        if self.first and self.last:
+            self.first.val, self.last.val = self.last.val, self.first.val
+        # Case 2: Adjacent nodes swapped -> swap first and middle
+        elif self.first and self.middle:
+            self.first.val, self.middle.val = self.middle.val, self.first.val
+
+class MergeBST:
+        # Function to merge two BSTs
+    def mergeBSTs(self, root1, root2):
+        # Lists to store inorder traversals
+        arr1, arr2 = [], []
+        # Perform inorder traversals
+        self.inorderTraversal(root1, arr1)
+        self.inorderTraversal(root2, arr2)
+        # Merge and return
+        return self.mergeArrays(arr1, arr2)
+
+    def inorderTraversal(self, root, arr):
+        # Base case
+        if not root:
+            return
+        # Traverse left subtree
+        self.inorderTraversal(root.left, arr)
+        # Store current node data
+        arr.append(root.data)
+        # Traverse right subtree
+        self.inorderTraversal(root.right, arr)
+
+    # Function to merge two sorted lists
+    def mergeArrays(self, arr1, arr2):
+        # Initialize result
+        merged = []
+        # Initialize pointers
+        i = j = 0
+        # Merge until one list ends
+        while i < len(arr1) and j < len(arr2):
+            if arr1[i] < arr2[j]:
+                merged.append(arr1[i])
+                i += 1
+            else:
+                merged.append(arr2[j])
+                j += 1
+        # Add remaining elements
+        merged.extend(arr1[i:])
+        merged.extend(arr2[j:])
+        return merged
+
+def maxSumBST(self, root: Optional[TreeNode]) -> int:
+        max_sum = 0  # Global tracker because a valid BST can have sum 0 (empty)
+
+        def dfs(node: Optional[TreeNode]):
+            nonlocal max_sum
+            # Base Case: Empty subtree is a valid BST with sum 0
+            # Returns: (is_bst, min_val, max_val, current_sum)
+            if not node:
+                return True, float("inf"), float("-inf"), 0
+
+            # Bottom-up post-order traversal
+            left_is_bst, left_min, left_max, left_sum = dfs(node.left)
+            right_is_bst, right_min, right_max, right_sum = dfs(node.right)
+
+            # Check if current node forms a valid BST
+            if left_is_bst and right_is_bst and left_max < node.val < right_min:
+                curr_sum = left_sum + right_sum + node.val
+                max_sum = max(max_sum, curr_sum)  # Update overall max sum found
+
+                return (
+                    True,
+                    min(node.val, left_min),
+                    max(node.val, right_max),
+                    curr_sum,
+                )
+
+            # If invalid BST, poison the bounds so parents also fail
+            return False, float("-inf"), float("inf"), 0
+
+        dfs(root)
+        return max_sum
+
+
+        
