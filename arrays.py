@@ -628,6 +628,35 @@ def leaders(self, nums):
         # Return the leaders
         return ans
 
+def maxCountExcludingOne(arr):
+    n = len(arr)
+    if n <= 1:
+        return 0  # Cannot form average with 0 remaining elements
+    
+    total_sum = sum(arr)
+    max_count = 0
+    
+    # Loop through each element index to temporarily exclude it
+    for i in range(n):
+        # Calculate sum and average of remaining (n - 1) elements
+        remaining_sum = total_sum - arr[i]
+        avg = remaining_sum / (n - 1)
+        
+        # Count remaining elements that are strictly > avg
+        count = 0
+        for j in range(n):
+            if j != i and arr[j] > avg:
+                count += 1
+                
+        # Track maximum count seen across all iterations
+        max_count = max(max_count, count)
+        
+    return max_count
+
+# Example Walkthrough:
+arr = [2, 10, 4, 6]
+print("Max Count:", maxCountExcludingOne(arr))
+
 def longestConsecutive(self, nums):
         n = len(nums)
         # If the array is empty
