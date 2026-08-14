@@ -6,12 +6,10 @@
 # Space Complexity: O(N²)
 
 # Number of nodes (n) and edges (m)
+from ast import Return
 from collections import deque
 from itertools import count
 from typing import List
-
-from strings import rotateString
-
 
 n, m = map(int, input().split())
 
@@ -39,7 +37,7 @@ adj = [[] for _ in range(n + 1)]
 for _ in range(m):
     u, v = map(int, input().split())
     adj[u].append(v)     # Directed edge from u to v
-    adj[v].append(u)      #remove this for directed
+    adj[v].append(u)     # remove this for directed
 
 # Adjacency List (Weighted)
 # Stores tuples in the format (neighbor_node, weight)
@@ -52,6 +50,12 @@ for _ in range(m):
     adj[u].append((v, weight))
     adj[v].append((u, weight))  # Omit for directed
 
+# adj = [[] for _ in range(V)]
+# adj[0] = [1, 2]
+# adj[1] = [0, 3]
+# adj[2] = [0, 4]
+# adj[3] = [1]
+# adj[4] = [2]
 
 # Traversal Techniques
  
@@ -69,7 +73,7 @@ def bfsOfGraph(self, V: int, adj: list[list[int]]) -> list[int]:
             node = q.popleft()  
             bfs.append(node)
 
-            # Traverse all adjacent vertices of the dequeued node
+            # Traver se all adjacent vertices of the dequeued node
             for it in adj[node]:
                 if not vis[it]:
                     vis[it] = True
@@ -82,15 +86,69 @@ def dfsOfGraph(self, V: int, adj: list[list[int]],vis:list[bool],result:list[int
     result.append(V)
 
     for i in adj[V]:
-         if not vis[i]:
-              self.dfsOfGraph(i,adj,vis,result)
+        if not vis[i]:
+            self.dfsOfGraph(i,adj,vis,result)
 
-# adj = [[] for _ in range(V)]
-# adj[0] = [1, 2]
-# adj[1] = [0, 3]
-# adj[2] = [0, 4]
-# adj[3] = [1]
-# adj[4] = [2]
+def dfs_matrix(grid: list[list[int]], start_r: int, start_c: int):
+    rows, cols = len(grid), len(grid[0])
+    visited = set()
+
+    def dfs(r: int, c: int):
+        # 1. Base Case: Out of bounds or already visited
+        if r < 0 or r >= rows or c < 0 or c >= cols or (r, c) in visited:
+            return
+        
+        # Add grid conditions here if needed (e.g., if grid[r][c] == 0: return)
+
+        # 2. Mark visited
+        visited.add((r, c))
+
+        # 3. Explore 4 directions
+        dfs(r + 1, c) # Down
+        dfs(r - 1, c) # Up
+        dfs(r, c + 1) # Right
+        dfs(r, c - 1) # Left
+
+    dfs(start_r, start_c)
+    
+# bfs in two ways
+
+def bfs(start_node, adj):
+    visited = set()
+    queue = deque([start_node])
+    visited.add(start_node)
+
+    while queue:
+        node = queue.popleft()
+        
+        # Process node here (e.g., print(node))
+        for neighbor in adj[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+
+def bfs_matrix(grid: list[list[int]], start_r: int, start_c: int):
+    rows, cols = len(grid), len(grid[0])
+    queue = deque([(start_r, start_c)])
+    visited = set([(start_r, start_c)])
+    
+    # 4-directional moves: Down, Up, Right, Left
+    directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
+    while queue:
+        r, c = queue.popleft()
+        
+        # Process current cell here if needed
+        
+        for dr, dc in directions:
+            nr, nc = r + dr, c + dc
+            
+            # Boundary & Visited Check
+            if 0 <= nr < rows and 0 <= nc < cols and (nr, nc) not in visited:
+                # Add grid conditions here if needed (e.g., grid[nr][nc] == 1)
+                visited.add((nr, nc))
+                queue.append((nr, nc))
+
 
 def findCircleNum(self, isConnected: List[List[int]]) -> int:
     n=len(isConnected)
@@ -125,7 +183,7 @@ def numIslands(self, grid: List[List[str]]) -> int:
     row,col=len(grid),len(grid[0])
     count=0
 
-    def dfs(r,c):
+    def dfs(r,c) -> None:
         if r>=row or r<0 or c>=col or c<0 or grid[r][c]=='0':
             return
         
@@ -144,6 +202,35 @@ def numIslands(self, grid: List[List[str]]) -> int:
 
     return count
 
+def maxAreaOfIsland(self, grid: List[List[int]]) -> int:
+    if not grid:
+        return 0
+    
+    row,col=len(grid),len(grid[0])
+    self.maxsize=0
+    self.size=0
+
+    def dfs(r,c):
+        if r>=row or r<0 or c>=col or c<0 or grid[r][c]==0:
+            return
+        
+        grid[r][c]=0
+        self.size+=1
+        self.maxsize=max(self.size,self.maxsize)
+
+        dfs(r,c-1)
+        dfs(r,c+1)
+        dfs(r-1,c)
+        dfs(r+1,c)
+
+    for r in range(row):
+        for c in range(col):
+            if grid[r][c]==1:
+                self.size=0
+                dfs(r,c)
+    
+    return self.maxsize
+
 def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> List[List[int]]:
     if not image:
         return image
@@ -154,7 +241,7 @@ def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> Lis
     if x==color:
         return image
 
-    def dfs(r,c):
+    def dfs(r,c) -> None:
         if r>=row or r<0 or c>=col or c<0 or image[r][c]!=x:
             return
         
@@ -168,42 +255,6 @@ def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> Lis
     dfs(sr,sc)
 
     return image
-
-# bfs in two ways
-
-def bfs(start_node, adj):
-    visited = set()
-    queue = deque([start_node])
-    visited.add(start_node)
-
-    while queue:
-        node = queue.popleft()
-        
-        # Process node here (e.g., print(node))
-        for neighbor in adj[node]:
-            if neighbor not in visited:
-                visited.add(neighbor)
-                queue.append(neighbor)
-
-def bfs_grid(grid, start_r, start_c):
-    rows, cols = len(grid), len(grid[0])
-    queue = deque([(start_r, start_c)])
-    visited = set([(start_r, start_c)])
-    
-    # 4 directional movements (down, up, right, left)
-    directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
-
-    while queue:
-        r, c = queue.popleft()
-
-        for dr, dc in directions:
-            nr, nc = r + dr, c + dc
-
-            # Boundary and condition checks
-            if 0 <= nr < rows and 0 <= nc < cols and (nr, nc) not in visited:
-                visited.add((nr, nc))
-                queue.append((nr, nc))
-
 
 def orangesRotting(self, grid: List[List[int]]) -> int:
     if not grid:
@@ -329,6 +380,36 @@ def highestPeak(self, isWater: List[List[int]]) -> List[List[int]]:
 
     return dist
 
+def maxDistance(self, grid: List[List[int]]) -> int:
+    rows, cols = len(grid), len(grid[0])
+    dist=[[-1] *cols for _ in range (rows)]
+    queue = deque()
+
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c]==1:
+                dist[r][c]=0
+                queue.append((r,c))
+
+    if len(queue) == 0 or len(queue) == rows * cols:
+        return -1
+
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  
+    maxdist=0
+
+    while queue:
+        r, c = queue.popleft()
+
+        for dr, dc in directions:
+            nr, nc = r + dr, c + dc
+
+            if (0<=nr<rows and 0 <= nc < cols and dist[nr][nc] == -1):
+                dist[nr][nc]=dist[r][c]+1
+                maxdist=max(maxdist,dist[nr][nc])
+                queue.append((nr, nc))  
+
+    return maxdist
+
 def solve(self, board: list[list[str]]) -> None:
     rows, cols = len(board), len(board[0])
 
@@ -396,4 +477,125 @@ def numEnclaves(self, grid: List[List[int]]) -> int:
                 count+=1
 
     return count
+
+def isBipartite(self, graph: List[List[int]]) -> bool:
+    color = [-1] * len(graph)
+    q = deque()
+
+    for i in range(len(graph)):
+        q.append(i)
+        color[i] = 0
+
+        while q:
+            node = q.popleft() 
+            if color[i]!=-1:
+                continue 
+
+            for it in graph[node]:
+                if color[it]==-1:
+                    color[it] = 0 if color[node]==1 else 1
+                    q.append(it)
+                elif color[it]== color[node]:
+                    return False
+
+    return True
+
+def isBipartite(self, graph: List[List[int]]) -> bool:
+    color = [-1] * len(graph)
+
+    def dfs(node):
+        color[i]=0
+        for it in graph[node]:
+            if color[it]==-1:
+                color[it] = 0 if color[node]==1 else 1
+                if dfs(it) is False:
+                    return False
+            elif color[it]== color[node]:
+                return False
+        return True
+
+    for i in range(len(graph)):
+        if color[i]==-1:
+            color[i]=0
+            if dfs(i) is False:
+                return False
+
+    return True
+
+class Cycle:
+    def isCyclic(self, V: int, edges: list[list[int]]) -> bool:
+        adj = [[] for _ in range(V)]
+        vis = [False] * V
+        pathvis = [False] * V
+
+        for u, v in edges:
+            adj[u].append(v)
+
+        for i in range(V):
+            if not vis[i]:
+                if self.dfs(i, adj, vis, pathvis):
+                    return True
+
+        return False
+            
+    def dfs(self,node:int,adj:list[list[int]],vis:list[int],pathvis:list[int]) -> bool:
+        vis[node]=True
+        pathvis[node]=True
+
+        for i in adj[node]:
+            if not vis[i]:
+                if self.dfs(i,adj,vis,pathvis):
+                    return True
+            elif pathvis[i]:
+                return True
+                
+        pathvis[node]=False
+        return False
+        
+def canFinish(self, numCourses: int, prerequisites: list[list[int]]) -> bool:
+        adj = [[] for _ in range(numCourses)]
+        vis = [False] * numCourses
+        pathvis = [False] * numCourses
+
+        # Build graph: [a, b] means b -> a (to take 'a', take 'b' first)
+        for dest, src in prerequisites:
+            adj[src].append(dest)
+
+        # Detect cycle using DFS
+        def dfs(node):
+            vis[node] = True
+            pathvis[node] = True
+
+            for neighbor in adj[node]:
+                if not vis[neighbor]:
+                    if dfs(neighbor):
+                        return True
+                elif pathvis[neighbor]:
+                    return True
+
+            pathvis[node] = False
+            return False
+
+        # If a cycle exists anywhere, you CANNOT finish
+        for i in range(numCourses):
+            if not vis[i]:
+                if dfs(i):
+                    return False
+
+        return True
+
+def eventualSafeNodes(self, graph: List[List[int]]) -> List[int]:
+    terminal=set()
+    res=[]
+    for i in range(len(graph)):
+        if not graph[i]:
+            terminal.add(i)
+
+    for li in graph:
+        for i in li:
+            if i in terminal:
+                res.append(i)
+
+
+
 
