@@ -8,6 +8,7 @@
 # Number of nodes (n) and edges (m)
 from ast import Return
 from collections import deque
+from curses import start_color
 from itertools import count
 from typing import List
 
@@ -522,7 +523,7 @@ def isBipartite(self, graph: List[List[int]]) -> bool:
 
     return True
 
-class Cycle:
+class DirectedGraph:
     def isCyclic(self, V: int, edges: list[list[int]]) -> bool:
         adj = [[] for _ in range(V)]
         vis = [False] * V
@@ -552,6 +553,42 @@ class Cycle:
         pathvis[node]=False
         return False
         
+def eventualSafeNodes(self, graph: List[List[int]]) -> List[int]:
+    n=len(graph)
+    vis=[False]*n
+    pathvis=[False]*n
+    check=[False]*n
+    safenode=[]
+
+    def dfs(node):
+        vis[node]=True
+        pathvis[node]=True
+
+        for i in graph[node]:
+            # If neighbor is unvisited, recurse
+            if not vis[i]:
+                if dfs(i):
+                    check[node]=False
+                    return True
+        # If neighbor is already in the current path, cycle found
+            elif pathvis[i]:
+                check[node]=False
+                return True
+        # Node is safe if no cycle is reachable from it
+        check[node]=True
+        pathvis[node]=False
+        return False
+
+    for i in range(n):
+        if not vis[i]:
+            dfs(i)
+
+    for i in range(n):
+        if check[i]:
+            safenode.append(i)
+
+    return safenode
+
 def canFinish(self, numCourses: int, prerequisites: list[list[int]]) -> bool:
         adj = [[] for _ in range(numCourses)]
         vis = [False] * numCourses
@@ -584,17 +621,35 @@ def canFinish(self, numCourses: int, prerequisites: list[list[int]]) -> bool:
 
         return True
 
-def eventualSafeNodes(self, graph: List[List[int]]) -> List[int]:
-    terminal=set()
-    res=[]
-    for i in range(len(graph)):
-        if not graph[i]:
-            terminal.add(i)
+# Topological Sort Algo iS on DAG(Directed Acyclic Graph)
+# such that u-> v  u apppears before v
 
-    for li in graph:
-        for i in li:
-            if i in terminal:
-                res.append(i)
+def topoSort(self, V: int, edges: list[list[int]]) -> list[int]:
+    # using dfs such that u-> v  u apppears before v
+    adj = [[] for _ in range(V)]
+    for u, v in edges:
+        adj[u].append(v)
+
+    vis=[False]*V
+    stack=[]
+
+    def dfs (node):
+        vis[node]=True
+
+        for it in adj[node]:
+            if not vis[it]:
+                dfs(it)
+        
+        stack.append(node)
+
+    for i in range(V):
+        if not vis[i]:
+            dfs(i)
+
+    return stack[::-1]
+
+
+
 
 
 
