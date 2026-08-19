@@ -622,6 +622,7 @@ def canFinish(self, numCourses: int, prerequisites: list[list[int]]) -> bool:
         return True
 
 # Topological Sort Algo iS on DAG(Directed Acyclic Graph)
+# why DAG bc we have to do linear ordering of nodes but if its a cycle we cant do that
 # such that u-> v  u apppears before v
 
 def topoSort(self, V: int, edges: list[list[int]]) -> list[int]:
@@ -647,6 +648,43 @@ def topoSort(self, V: int, edges: list[list[int]]) -> list[int]:
             dfs(i)
 
     return stack[::-1]
+
+def KhansAlgoTopologicalSort(self, V, ad) -> list:
+        # Create a list to store in-degree of each vertex
+        indegree = [0] * V
+
+        # Loop over all vertices to calculate in-degree
+        for i in range(V):
+            # Loop through adjacent vertices
+            for it in adj[i]:
+                # Increase in-degree of connected vertex
+                indegree[it] += 1
+
+        q = deque()
+
+        # Loop through all vertices
+        for i in range(V):
+            # If in-degree is zero, add to queue
+            if indegree[i] == 0:
+                q.append(i)
+
+        # List to store topological order
+        topo = []
+
+        # Process vertices until queue is empty
+        while q:
+            node = q.popleft()
+            # Add it to the topological order
+            topo.append(node)
+
+            for it in adj[node]:
+                # Reduce in-degree of connected vertex
+                indegree[it] -= 1
+                # If in-degree becomes zero, push into queue
+                if indegree[it] == 0:
+                    q.append(it)
+
+        return topo
 
 
 
