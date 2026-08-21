@@ -668,10 +668,8 @@ def KhansAlgoTopologicalSort(self, V, ad) -> list:
             if indegree[i] == 0:
                 q.append(i)
 
-        # List to store topological order
         topo = []
 
-        # Process vertices until queue is empty
         while q:
             node = q.popleft()
             # Add it to the topological order
@@ -686,7 +684,240 @@ def KhansAlgoTopologicalSort(self, V, ad) -> list:
 
         return topo
 
+def isCyclic(self, V: int, edges: list[list[int]]) -> bool:
+    # logic is we cannot do full topo sort on cyclic graph
+    indeg=[0]*V
+    topo=[]
+    q=deque()
+    adj=[[] for _ in range (V)]
 
+    for u,v in edges:
+        adj[u].append(v)
+
+    for i in range(V):
+        for it in adj[i]:
+            indeg[it]+=1
+
+    for i in range(V):
+        if indeg[i]==0:
+            q.append(i)
+
+    while q:
+        node=q.popleft()
+        topo.append(node)
+
+        for it in adj[node]:
+            indeg[it]-=1
+
+            if indeg[it]==0:
+                q.append(it)
+
+    if len(topo)==V:
+        return False
+    else:
+        return True
+
+class CourseSchedule:
+    def canFinish(self, numCourses: int, prerequisites: list[list[int]]) -> bool:
+        # logic if we can assign in a linear order then we can do all tasks i.e topo sort but if not i.e cycel present we cant perform all task
+        adj = [[] for _ in range(numCourses)]
+        indeg=[0]*numCourses
+        topo=[]
+        q=deque()
+
+        for dest, src in prerequisites:
+            adj[src].append(dest)    
+
+        for i in range(numCourses):
+            for it in adj[i]:
+                indeg[it]+=1
+
+        for i in range(numCourses):
+            if indeg[i]==0:
+                q.append(i)
+
+        while q:
+            node=q.popleft()
+            topo.append(node)
+
+            for it in adj[node]:
+                indeg[it]-=1
+
+                if indeg[it]==0:
+                    q.append(it)
+
+        if len(topo)==numCourses:
+            return True
+        else:
+            return False
+
+    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+        adj = [[] for _ in range(numCourses)]
+        indeg=[0]*numCourses
+        topo=[]
+        q=deque()
+
+        for dest, src in prerequisites:
+            adj[src].append(dest)    
+
+        for i in range(numCourses):
+            for it in adj[i]:
+                indeg[it]+=1
+
+        for i in range(numCourses):
+            if indeg[i]==0:
+                q.append(i)
+
+        while q:
+            node=q.popleft()
+            topo.append(node)
+
+            for it in adj[node]:
+                indeg[it]-=1
+
+                if indeg[it]==0:
+                    q.append(it)
+
+        if len(topo)==numCourses:
+            return topo
+        else:
+            return []
+
+def eventualSafeNodes(self, graph: List[List[int]]) -> List[int]:
+    V=len(graph)
+    indeg=[0]*V
+    topo=[]
+    adj=[[] for _ in range(V)]
+    for i in range(V):
+        for it in graph[i]:
+            adj[it].append(i)
+            indeg[i]+=1
+
+    q=deque()
+
+    for i in range(V):
+        if indeg[i]==0:
+            q.append(i)
+
+    while q:
+        node=q.popleft()
+        topo.append(node)
+
+        for it in adj[node]:
+            indeg[it]-=1
+
+            if indeg[it]==0:
+                q.append(it)
+
+    return sorted(topo)
+
+def alienDict(self, words: list[str]) -> str:
+    n = len(words)
+    adj=[[] for _ in range(26)]
+    present = [False] * 26
+
+    for w in words:
+      for ch in w:
+        present[ord(ch) - ord("a")] = True
+
+    for i in range(n-1):
+        s1=words[i]
+        s2=words[i+1]
+        leng=min(len(s1),len(s2))
+
+        # if len(s1) > len(s2) and s1[:leng] == s2[:leng]:
+        #     return ""
+
+        for j in range(leng):
+            if s1[j]!=s2[j]:
+                adj[ord(s1[j]) - ord('a')].append(ord(s2[j]) - ord('a'))
+                break
+
+    def KhansAlgoTopologicalSort(V, adj):
+        indegree = [0] * V
+
+        for i in range(V):
+            for it in adj[i]:
+                indegree[it] += 1
+
+        q = deque()
+
+        for i in range(V):
+            if present[i] and indegree[i] == 0:
+                q.append(i)
+
+        topo = []
+
+        while q:
+            node = q.popleft()
+            topo.append(node)
+
+            for it in adj[node]:
+                indegree[it] -= 1
+                if indegree[it] == 0:
+                    q.append(it)
+
+        return topo  
+
+    topo=KhansAlgoTopologicalSort(26,adj)
+
+    if len(topo)==sum(present):
+        # ans = "".join(chr(it + ord('a')) for it in topo) 
+        ans=''
+        for it in topo:
+            ans+=chr(it+ord('a'))
+
+        return ans
+    else:
+        return ''
+
+def allPathsSourceTarget(self, graph: List[List[int]]) -> List[List[int]]:
+        target = len(graph) - 1
+        res = []
+
+        def dfs(node: int, path: List[int]):
+            if node == target:
+                res.append(list(path))
+                return
+
+            for neighbor in graph[node]:
+                path.append(neighbor)
+                dfs(neighbor, path)
+                path.pop()  
+
+        dfs(0, [0])
+        return res
+
+def shortestPath(self, V: int, edges: list[list[int]]) -> list[int]:
+    dist=[float('inf')]*V
+    topo=[]
+    vis=[False]*V
+    adj=[[] for _ in range(V)]
+
+    for u,v,wt in edges:
+        adj[u].append((v,wt))
+
+    def toposortdfs(node):
+        vis[node]=True
+        for it,wt in adj[node]:
+            if not vis[it]:
+                toposortdfs(it)
+        topo.append(node)
+
+    for i in range(V):
+        if not vis[i]:
+            toposortdfs(i)
+
+    dist[0]=0
+
+    while topo:
+        node=topo.pop()
+        if dist[node] != float('inf'):
+            for it,wt in adj[node]:
+                if dist[node]+wt<dist[it]:
+                    dist[it]=dist[node]+wt
+
+    return [d if d != float('inf') else -1 for d in dist]
 
 
 
