@@ -7,6 +7,7 @@
 
 # Number of nodes (n) and edges (m)
 from ast import Return
+from asyncio import graph
 from collections import deque
 from curses import start_color
 from itertools import count
@@ -888,7 +889,7 @@ def allPathsSourceTarget(self, graph: List[List[int]]) -> List[List[int]]:
         dfs(0, [0])
         return res
 
-def shortestPath(self, V: int, edges: list[list[int]]) -> list[int]:
+def shortestPathDirected(self, V: int, edges: list[list[int]]) -> list[int]:
     dist=[float('inf')]*V
     topo=[]
     vis=[False]*V
@@ -919,7 +920,76 @@ def shortestPath(self, V: int, edges: list[list[int]]) -> list[int]:
 
     return [d if d != float('inf') else -1 for d in dist]
 
+def shortestCostUndirected(self, V, edges, src, dest):
+    adj = [[] for _ in range(V)]
+    for u, v in edges:
+        adj[u].append(v)
+        adj[v].append(u)
 
+    dist = [-1] * V
+    dist[src] = 0
+    q = deque([src])
+
+    while q:
+        node = q.popleft()
+
+        if node == dest:
+            return dist[node]
+
+        for neighbor in adj[node]:
+            if dist[neighbor] == -1:
+                dist[neighbor] = dist[node] + 1
+                q.append(neighbor)
+
+    return -1
+
+def shortestPathUnDirected(self, V: int, edges: list[list[int]] ) -> list[int]:
+    adj=[[] for _ in range(V)]
+    for u,v in edges:
+        adj[u].append(v)
+        adj[v].append(u)
+
+    dist=[-1]*V
+    dist[0]=0
+    q=deque([0])
+
+    while q:
+        node=q.popleft()
+
+        for i in adj[node]:
+            if dist[i] == -1:
+                dist[i] = dist[node] + 1
+                q.append(i)
+
+    return dist
+
+def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+        word_set = set(wordList)
+        
+        # If endWord is not in the dictionary, no valid sequence exists
+        if endWord not in word_set:
+            return 0
+
+        # Queue stores tuples of (current_word, current_transformation_length)
+        queue = deque([(beginWord, 1)])
+        
+        while queue:
+            word, length = queue.popleft()
+            
+            # Target word reached
+            if word == endWord:
+                return length
+            
+            # Try changing each character from 'a' through 'z'
+            for i in range(len(word)):
+                for c in 'abcdefghijklmnopqrstuvwxyz':
+                    next_word = word[:i] + c + word[i+1:]
+                    
+                    if next_word in word_set:
+                        word_set.remove(next_word)  # Mark as visited to avoid cycles
+                        queue.append((next_word, length + 1))
+                        
+        return 0
 
 
 
