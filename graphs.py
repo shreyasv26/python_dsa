@@ -1132,6 +1132,9 @@ def shortestPath(self, mat: list[list[int]], src: list[int], dest: list[int]) ->
     return -1
 
 def shortestPathBinaryMatrix(self, grid: List[List[int]]) -> int:
+    n=len(grid)
+    m=len(grid[0])
+
     if grid[0][0] == 1 or grid[n - 1][m - 1] == 1:
         return -1
     
@@ -1144,8 +1147,6 @@ def shortestPathBinaryMatrix(self, grid: List[List[int]]) -> int:
             (-1, 0), (1, 0), (0, -1), (0, 1),
             (-1, -1), (-1, 1), (1, -1), (1, 1)
         ]
-    n=len(grid)
-    m=len(grid[0])
 
     while q:
         dis,r,c = q.popleft()
@@ -1163,9 +1164,88 @@ def shortestPathBinaryMatrix(self, grid: List[List[int]]) -> int:
     return -1
 
 def minimumEffortPath(self, heights: List[List[int]]) -> int:
+    n=len(heights)
+    m=len(heights[0])
+    
+    if n == 1 and m == 1:
+        return 0
+    
+    q=deque([(0,0,0)])
+    dist=[[float('inf')] *m for _ in range(n)]
+    dist[0][0]=0
+    directions = [
+            (-1, 0), (1, 0), (0, -1), (0, 1)
+        ]
 
+    while q:
+        effort,r,c = heapq.heappop(q)
 
+        # Reached target
+        if r == n - 1 and c == m - 1:
+            return effort
 
+        # Ignore outdated paths
+        if effort > dist[r][c]:
+            continue
 
+        for dr,dc in directions:
+            nr,nc=r+dr,c+dc
 
+            if 0 <= nr < n and 0 <= nc < m :
+                diff=max(effort, abs(heights[r][c] - heights[nr][nc]))
 
+                if dist[nr][nc]>diff:
+                    dist[nr][nc]=diff  
+                    heapq.heappush(q,(diff,nr,nc))
+
+    return 0
+
+def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+    if len(flights) == 1 and flights[0][0]==dst and flights[0][1]==src:
+        return -1
+            
+    adj=[[] for _ in range(n)]
+    for u,v,w in flights:
+        adj[u].append((v,w))
+
+    dist=[float('inf')]*n
+    dist[src]=0
+
+    pq=deque([[0,src,0]]) #stops/steps,node,cost
+
+    while pq:
+        steps,node,cost=pq.popleft()
+            
+        if steps>k:
+            continue
+            
+        for i,c in adj[node]:
+            newcost=cost+c
+            if dist[i]>newcost and steps <= k :
+                dist[i]=newcost
+                pq.append((steps+1,i,newcost))
+            
+    return dist[dst] if dist[dst] != float('inf') else -1
+
+def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+    adj=[[] for _ in range(n)]
+    for u,v,w in times:
+        adj[u].append((v,w))
+
+    dist=[float('inf')]*(n+1)
+    dist[k]=0
+
+    pq=deque([[k,0]]) #node,cost
+
+    while pq:
+        node,cost=pq.popleft()
+            
+        for i,c in adj[node]:
+            newcost=cost+c
+            if dist[i]>newcost:
+                dist[i]=newcost
+                pq.append([i,newcost])
+            
+    ans = max(dist[1:])
+
+    return ans if ans != float('inf') else -1
