@@ -10,7 +10,9 @@ from ast import Return
 from asyncio import graph
 from collections import deque
 from curses import start_color
+import heapq
 from itertools import count
+from multiprocessing import heap
 from typing import List
 
 n, m = map(int, input().split())
@@ -990,6 +992,180 @@ def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int
                         queue.append((next_word, length + 1))
                         
         return 0
+
+def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+    word_set=set(wordList)
+    res=[]
+
+    if endWord not in word_set:
+        return []
+    
+    q=deque([[beginWord]])
+    visited_this_level = set()
+
+    while q:
+        level_size=len(q)
+
+        for _ in range(level_size):
+
+            path = q.popleft()
+            word=path[-1]
+
+            if word == endWord:
+                res.append(path)
+                continue
+                
+            for i in range(len(word)):
+                for c in 'abcdefghijklmnopqrstuvwxyz':
+                    next_word = word[:i] + c + word[i+1:]
+                        
+                    if next_word in word_set:
+                        visited_this_level.add(next_word) 
+                        q.append(path+[next_word])
+        if res:
+            break
+
+        word_set-=visited_this_level
+        visited_this_level.clear()
+
+    return res
+
+# Dijkstra's Algorithm  TC: O(E logV)
+def dijkstra(self, V: int, edges: list[list[int]], src: int) -> list[int]:
+    adj = [[] for _ in range(V)]
+    for u, v, w in edges:
+        adj[u].append((v, w))
+        adj[v].append((u, w))
+
+    # 2. Priority Queue storing (distance, node)
+    pq = [(0, src)]
+    dist = [float('inf')] * V
+    dist[src] = 0
+
+    while pq:
+        # gives min distance
+        cdis, cnode = heapq.heappop(pq)
+
+        # Ignore outdated distances
+        if cdis > dist[cnode]:
+                continue
+
+        # Relax neighbors
+        for inode, weight in adj[cnode]:
+            dis = cdis + weight
+
+            if dis < dist[inode]:
+                dist[inode] = dis
+                heapq.heappush(pq, (dis, inode))
+
+    return dist
+
+def dijkstraPath(self, V: int, edges: list[list[int]], src: int, dest:int) -> list[int]:
+    # shortest path
+    adj = [[] for _ in range(V+1)]
+    for u, v, w in edges:
+        adj[u].append((v, w))
+        adj[v].append((u, w))
+
+    pq = [(0,src)] # src=1
+    dist = [float('inf')] * (V+1)
+    dist[src] = 0
+    parent=list(range(V+1))
+
+    while pq:
+        currdist,currnode=heapq.heappop(pq)
+
+        if currdist>dist[currnode]:
+            continue  #bc older larger dist should be removed
+
+        for node,weight in adj[currnode]:
+            dis=currdist+weight
+
+            if dis<dist[node]:
+                dist[node]=dis
+                parent[node]=currnode
+                heapq.heappush(pq,(dis,node))
+
+    if dist[dest]==float('inf'):
+        return [-1] 
+    
+    node=dist
+    path=[]
+    while parent[node]!=node:
+        path.append(node)
+        node=parent[node]
+
+    path.append(src)
+    return path[::-1] # reverse the list n return bc we started from destination
+
+def shortestPath(self, mat: list[list[int]], src: list[int], dest: list[int]) -> int:
+    if mat[src[0]][src[1]] == 0 or mat[dest[0]][dest[1]] == 0:
+        return -1
+    
+    if src==dest:
+        return 0
+    
+    q=deque([(0,src[0],src[1])])
+    dr=[-1,0,1,0]
+    dc=[0,1,0,-1]
+    n=len(mat)
+    m=len(mat[0])
+
+    # Initialize the distance matrix, marking all cells as unvisited initially
+    dist = [[float('inf')] * m for _ in range(n)]
+    dist[src[0]][src[1]] = 0
+
+    while q:
+        dis,r,c = q.popleft()
+
+        for i in range(4):
+            nr,nc=r+dr[i],c+dc[i]
+
+            # Check if the new cell is within bounds and is a valid cell (i.e., 1)
+            if 0 <= nr < n and 0 <= nc < m and mat[nr][nc] == 1 and dis + 1 < dist[nr][nc]:
+                dist[nr][nc]=dis+1
+                if [nr,nc]==dest:
+                    return dis+1
+                
+                q.append((dis+1,nr,nc))
+
+    return -1
+
+def shortestPathBinaryMatrix(self, grid: List[List[int]]) -> int:
+    if grid[0][0] == 1 or grid[n - 1][m - 1] == 1:
+        return -1
+    
+    if n == 1 and m == 1:
+        return 1
+    
+    q=deque([(1,0,0)])
+    grid[0][0]=1
+    directions = [
+            (-1, 0), (1, 0), (0, -1), (0, 1),
+            (-1, -1), (-1, 1), (1, -1), (1, 1)
+        ]
+    n=len(grid)
+    m=len(grid[0])
+
+    while q:
+        dis,r,c = q.popleft()
+
+        for dr,dc in directions:
+            nr,nc=r+dr,c+dc
+
+            if 0 <= nr < n and 0 <= nc < m and grid[nr][nc] == 0:
+                if nr == n - 1 and nc == m - 1:
+                    return dis + 1
+                
+                grid[nr][nc]=1  #so i wont go back
+                q.append((dis+1,nr,nc))
+
+    return -1
+
+def minimumEffortPath(self, heights: List[List[int]]) -> int:
+
+
+
 
 
 
