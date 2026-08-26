@@ -13,6 +13,7 @@ from curses import start_color
 import heapq
 from itertools import count
 from multiprocessing import heap
+from re import I
 from typing import List
 
 n, m = map(int, input().split())
@@ -1211,10 +1212,10 @@ def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int
     dist=[float('inf')]*n
     dist[src]=0
 
-    pq=deque([[0,src,0]]) #stops/steps,node,cost
+    q=deque([[0,src,0]]) #stops/steps,node,cost
 
-    while pq:
-        steps,node,cost=pq.popleft()
+    while q:
+        steps,node,cost=q.popleft()
             
         if steps>k:
             continue
@@ -1223,29 +1224,72 @@ def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int
             newcost=cost+c
             if dist[i]>newcost and steps <= k :
                 dist[i]=newcost
-                pq.append((steps+1,i,newcost))
+                q.append((steps+1,i,newcost))
             
     return dist[dst] if dist[dst] != float('inf') else -1
 
 def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
-    adj=[[] for _ in range(n)]
+    adj=[[] for _ in range(n+1)]
     for u,v,w in times:
         adj[u].append((v,w))
 
     dist=[float('inf')]*(n+1)
     dist[k]=0
 
-    pq=deque([[k,0]]) #node,cost
+    q=deque([[k,0]]) #node,cost
 
-    while pq:
-        node,cost=pq.popleft()
+    while q:
+        node,cost=q.popleft()
             
         for i,c in adj[node]:
             newcost=cost+c
             if dist[i]>newcost:
                 dist[i]=newcost
-                pq.append([i,newcost])
+                q.append([i,newcost])
             
     ans = max(dist[1:])
 
     return ans if ans != float('inf') else -1
+
+def countPaths(self, n: int, roads: List[List[int]]) -> int:
+    adj=[[] for _ in range(n)]
+    for u,v,w in roads:
+        adj[u].append((v,w))
+        adj[v].append((u,w))
+
+    ways=[0]*n
+    dist=[float('inf')] * n
+
+    ways[0]=1
+    dist[0]=0
+
+    pq=[(0,0)]
+
+    mod = int(1e9 + 7)  # to keep the large number of ways
+
+    while pq:
+        d,node=heapq.heappop(pq)
+
+        if dist[node]<d:
+            continue
+
+        for inode,idist in adj[node]:
+            newd=d+idist
+
+            # Found a strictly shorter path
+            if dist[inode]>newd:
+                ways[inode]=ways[node]
+                dist[inode]=newd
+                heapq.heappush(pq,(newd,inode))
+
+            # Found an alternative path of the same shortest length
+            elif newd==dist[inode]:
+                ways[inode]=(ways[inode] + ways[node]) % mod
+
+    return -1 if ways[n-1]==0 else ways[n-1]%mod
+
+
+
+    
+
+
