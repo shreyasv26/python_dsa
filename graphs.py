@@ -1031,7 +1031,7 @@ def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List
 
     return res
 
-# Dijkstra's Algorithm  TC: O(E logV)
+# Dijkstra's Algorithm  TC: O(E logV)   Not possible with -ve values 
 def dijkstra(self, V: int, edges: list[list[int]], src: int) -> list[int]:
     adj = [[] for _ in range(V)]
     for u, v, w in edges:
@@ -1288,8 +1288,44 @@ def countPaths(self, n: int, roads: List[List[int]]) -> int:
 
     return -1 if ways[n-1]==0 else ways[n-1]%mod
 
+def minSteps(self, arr, start, end):
+    q=deque([(start,0)])
 
+    dist = [float('inf')] * 1000
+    dist[start] = 0
+    mod = 1000
 
+    while q:
+        node,steps=q.popleft()
+
+        for factor in arr:
+            num=(factor * node) % mod
+
+            if dist[num]>steps+1:
+                dist[num]=steps+1
+
+                if num==end:
+                    return steps+1
+
+                q.append((num,steps+1)) 
+
+    return -1
     
+# Bellmen Ford Algorithm -> Single source shortest path algo 
+# -ve weigts can be used and Directed Graphs andUndirected graphs too
 
+def BellmanFord(self, V: int, edges: list[list[int]], src: int) -> list[int]:
+    inf=100000000
+    dist=[inf]*V
+    dist[src]=0
 
+    for _ in range(V-1):
+        for u,v,w in edges:
+            if dist[u] != inf and dist[u] + w < dist[v]:
+                dist[v]=dist[u]+ w
+
+    for u, v, w in edges:
+        if dist[u] != inf and dist[u] + w < dist[v]:
+            return [-1]
+        
+    return dist
