@@ -1329,3 +1329,69 @@ def BellmanFord(self, V: int, edges: list[list[int]], src: int) -> list[int]:
             return [-1]
         
     return dist
+
+# Flody Warshall -> multisource shortest path and even -ve cycle
+# shortest path -> path with smallest weight
+
+def FloydWarshall(self, matrix):
+        
+        # Getting the number of nodes
+        n = len(matrix)
+        
+        # For each intermediate node k
+        for k in range(n):
+            
+            # Check for every (i, j) pair of nodes
+            for i in range(n):
+                for j in range(n):
+                    
+                    # If k is not an intermediate 
+                    # node, skip the iteration
+                    if matrix[i][k] == -1 or matrix[k][j] == -1:
+                        continue
+                    
+                    # If no direct edge from 
+                    # i to v is present
+                    if matrix[i][j] == -1:
+                        
+                        # Update the distance
+                        matrix[i][j] = matrix[i][k] + matrix[k][j]
+                    
+                    # Else update the distance to 
+                    # minimum of both paths
+                    else:
+                        matrix[i][j] = min(matrix[i][j], matrix[i][k] + matrix[k][j])
+
+def findTheCity(self, n: int, edges: List[List[int]], distanceThreshold: int) -> int:
+    dist = [[float('inf')] * n for _ in range(n)]
+    
+    for edge in edges:
+        dist[edge[0]][edge[1]] = edge[2]  
+        dist[edge[1]][edge[0]] = edge[2]  
+
+    # Set the diagonal to 0, as the distance from a city to itself is 0
+    for i in range(n):
+        dist[i][i] = 0
+
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                if dist[i][k] != float('inf') and dist[k][j] != float('inf'):
+                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+
+    # Initialize variables to track the city with the least reachable cities
+    cnt_city = n
+    city_no = -1
+
+    # Check each city and count the number of cities within the threshold distance
+    for city in range(n):
+        cnt = 0
+        for adj_city in range(n):
+            if dist[city][adj_city] <= distanceThreshold:
+                cnt += 1
+
+        if cnt <= cnt_city:
+            cnt_city = cnt
+            city_no = city
+
+    return city_no
