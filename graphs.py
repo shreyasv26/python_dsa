@@ -192,7 +192,7 @@ def numIslands(self, grid: List[List[str]]) -> int:
         if r>=row or r<0 or c>=col or c<0 or grid[r][c]=='0':
             return
         
-        grid[r][c]='0'
+        grid[r][c]='0'  #making 1 as 0 so we wont go back again
 
         dfs(r,c-1)
         dfs(r,c+1)
@@ -1365,33 +1365,65 @@ def FloydWarshall(self, matrix):
 def findTheCity(self, n: int, edges: List[List[int]], distanceThreshold: int) -> int:
     dist = [[float('inf')] * n for _ in range(n)]
     
-    for edge in edges:
-        dist[edge[0]][edge[1]] = edge[2]  
-        dist[edge[1]][edge[0]] = edge[2]  
-
-    # Set the diagonal to 0, as the distance from a city to itself is 0
     for i in range(n):
         dist[i][i] = 0
+            
+        # Build initial edge weights
+    for u, v, w in edges:
+        dist[u][v] = w
+        dist[v][u] = w
 
+        # 2. Floyd-Warshall Algorithm: All-Pairs Shortest Path
     for k in range(n):
         for i in range(n):
             for j in range(n):
-                if dist[i][k] != float('inf') and dist[k][j] != float('inf'):
-                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+                if dist[i][k] + dist[k][j] < dist[i][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
 
-    # Initialize variables to track the city with the least reachable cities
-    cnt_city = n
-    city_no = -1
+    # 3. Find the city with the smallest number of reachable cities within distanceThreshold
+    min_reachable = n
+    ans_city = -1
 
-    # Check each city and count the number of cities within the threshold distance
-    for city in range(n):
-        cnt = 0
-        for adj_city in range(n):
-            if dist[city][adj_city] <= distanceThreshold:
-                cnt += 1
+    for i in range(n):
+        reachable_count = 0
+        for j in range(n):
+            if i != j and dist[i][j] <= distanceThreshold:
+                reachable_count += 1
+            
+        # If tie or strictly smaller, pick the greater city index
+        if reachable_count <= min_reachable:
+            min_reachable = reachable_count
+            ans_city = i
 
-        if cnt <= cnt_city:
-            cnt_city = cnt
-            city_no = city
+    return ans_city
 
-    return city_no
+# Prim's Algo (MST)
+def prims(self, V: int, edges: list[list[int]]) -> int:
+    vis=[0]*V
+    mst=[]
+    sum=0
+    q=[]
+
+    adj = [[] for _ in range(V)]
+    for u, v, w in edges:
+        adj[u].append((v, w))
+        adj[v].append((u, w))
+
+    q.append((0,0,-1))
+    
+    while q:
+        w,t,f=heapq.heappop(q)
+
+        if vis[t]==1:
+            continue
+
+        vis[t]=1
+        sum+=w
+
+        for next,cost in adj[t]:
+            if vis[next]==0:
+                heapq.heappush(q,(cost,next,t))
+
+    return sum
+
+def kruskalsMST(self, V: int, edges: List[List[int]]) -> int:

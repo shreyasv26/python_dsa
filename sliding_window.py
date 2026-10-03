@@ -1,3 +1,4 @@
+from timeit import repeat
 from typing import List
 
 
@@ -161,13 +162,13 @@ def numberOfSubstrings(self, s: str) -> int:
 
 def maxScore(self, cardPoints: List[int], k: int) -> int:
     maxsum=0
-    l,r=0,len(cardPoints)
+    l,r=0,len(cardPoints)-1
 
     for i in range(k):      #sum(cardPoints[:k])
-        maxsum+=i
+        maxsum+=cardPoints[i]
 
     l=k-1
-    while l<r:
+    while l>=0:
         curr_sum+=(-cardPoints[l]+cardPoints[r])
 
         maxsum=max(maxsum,curr_sum)
@@ -291,6 +292,31 @@ def minWindow2(self, s: str, t: str) -> str:
             
         return "" if start_idx == -1 else s[start_idx : start_idx + min_len]
 
+def findRepeatedDnaSequences(self, s: str) -> list[str]:
+    seen=set()
+    repeated=set()
 
+    for i in range(len(s)-9):
+        sub=s[i:i+10]
+        if sub in seen:
+            repeated.add(sub)
+        else:
+            seen.add(sub)
+
+    return list(repeated)
+
+def minSubArrayLen(self, target: int, nums: list[int]) -> int:
+    l,r=0,0
+    minlen=len(nums)+1
+    sum=0
+    
+    for r in range(len(nums)):
+        sum+=nums[r]
+        while sum>= target:
+            minlen=min(minlen,r-l+1)
+            sum-=nums[l]
+            l+=1
+
+    return 0 if minlen==len(nums)+1 else minlen
 
 
